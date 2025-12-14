@@ -402,17 +402,23 @@
       const reader = new FileReader();
       reader.onload = () => {
         fabric.Image.fromURL(reader.result, (img) => {
-          const maxW = canvas.getWidth() * 0.8;
+          // Use viewport center so it appears where the user is looking (important if zoomed)
+          const center = canvas.getVpCenter();
+
+          // Scale to reasonable size (50% of canvas width) to avoid memory issues on mobile
+          const maxW = canvas.getWidth() * 0.5;
           const scale = Math.min(1, maxW / img.width);
           img.scale(scale);
           
           // Apply Multiply blending and Desaturation (Grayscale)
           img.set({ 
-            left: canvas.getWidth()/2, 
-            top: canvas.getHeight()/2, 
+            left: center.x, 
+            top: center.y, 
             originX: 'center', 
             originY: 'center',
-            globalCompositeOperation: 'multiply' 
+            globalCompositeOperation: 'multiply',
+            // Disable object caching to prevent "incomplete" or glitchy rendering on mobile GPUs
+            objectCaching: false 
           });
           
           img.filters.push(new fabric.Image.filters.Grayscale());
@@ -420,6 +426,7 @@
 
           canvas.add(img);
           canvas.setActiveObject(img);
+          canvas.requestRenderAll();
         });
       };
       reader.readAsDataURL(file);
