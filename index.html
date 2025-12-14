@@ -158,6 +158,37 @@
         e.target.angle = Math.round(e.target.angle / 15) * 15;
       });
 
+    // Responsive Canvas Scaling
+    function resizeCanvas() {
+      const wrapper = document.querySelector('.canvas-wrap');
+      // Calculate available width (minus padding)
+      const availableWidth = wrapper.clientWidth - 24;
+      const baseWidth = 1024;
+      const baseHeight = 768;
+      
+      // Determine scale needed to fit
+      let scale = 1;
+      if (availableWidth < baseWidth) {
+        scale = availableWidth / baseWidth;
+      }
+      
+      // Apply CSS scaling (visual only, keeps internal resolution high)
+      const finalW = baseWidth * scale;
+      const finalH = baseHeight * scale;
+      
+      // Update the wrapper and canvas styles
+      canvas.setDimensions({ width: finalW + 'px', height: finalH + 'px' }, { cssOnly: true });
+      
+      // Re-calculate offsets for correct mouse/touch mapping
+      canvas.calcOffset();
+      canvas.requestRenderAll();
+    }
+    
+    // Listen for window resize
+    window.addEventListener('resize', resizeCanvas);
+    // Initial call
+    setTimeout(resizeCanvas, 100);
+
     // Keep current background image reference
     let bgImage = null;
 
