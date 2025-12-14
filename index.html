@@ -410,19 +410,26 @@
           const scale = Math.min(1, maxW / img.width);
           img.scale(scale);
           
-          // Filters removed per request
+          // Initial setup: Normal rendering
           img.set({ 
             left: center.x, 
             top: center.y, 
             originX: 'center', 
             originY: 'center',
-            // Disable object caching to prevent "incomplete" or glitchy rendering on mobile GPUs
             objectCaching: false 
           });
           
           canvas.add(img);
           canvas.setActiveObject(img);
           canvas.requestRenderAll();
+
+          // Apply Multiply and Grayscale after 1 second
+          setTimeout(() => {
+            img.set('globalCompositeOperation', 'multiply');
+            img.filters.push(new fabric.Image.filters.Grayscale());
+            img.applyFilters();
+            canvas.requestRenderAll();
+          }, 1000);
         });
       };
       reader.readAsDataURL(file);
