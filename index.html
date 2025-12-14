@@ -163,14 +163,18 @@
       const wrapper = document.querySelector('.canvas-wrap');
       // Calculate available width (minus padding)
       const availableWidth = wrapper.clientWidth - 24;
+      // Calculate available height (window height minus header/footer estimate)
+      const availableHeight = window.innerHeight - 180;
+
       const baseWidth = 1024;
       const baseHeight = 1024;
       
-      // Determine scale needed to fit
-      let scale = 1;
-      if (availableWidth < baseWidth) {
-        scale = availableWidth / baseWidth;
-      }
+      // Determine scale needed to fit both width and height
+      const scaleW = availableWidth / baseWidth;
+      const scaleH = availableHeight / baseHeight;
+      
+      // Use the smaller scale to ensure it fits entirely, but don't scale up > 1
+      const scale = Math.min(scaleW, scaleH, 1);
       
       // Apply CSS scaling (visual only, keeps internal resolution high)
       const finalW = baseWidth * scale;
