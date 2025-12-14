@@ -425,9 +425,23 @@
 
           // Apply Multiply and Grayscale after 1 second
           setTimeout(() => {
+            // Capture intended display dimensions
+            const curW = img.getScaledWidth();
+            const curH = img.getScaledHeight();
+
             img.set('globalCompositeOperation', 'multiply');
             img.filters.push(new fabric.Image.filters.Grayscale());
             img.applyFilters();
+
+            // Restore dimensions in case filter application altered the internal image size
+            // (Common issue on high-DPI mobile devices)
+            if (img.width > 0) {
+                img.set({
+                    scaleX: curW / img.width,
+                    scaleY: curH / img.height
+                });
+            }
+
             canvas.requestRenderAll();
           }, 1000);
         });
