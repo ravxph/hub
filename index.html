@@ -123,7 +123,7 @@
   <main>
     <!-- Left project panel removed per request; canvas now occupies full width -->
     <section class="canvas-wrap">
-      <canvas id="c" width="1024" height="768"></canvas>
+      <canvas id="c" width="1024" height="1024"></canvas>
     </section>
   </main>
 
@@ -147,7 +147,7 @@
         selection: true,
         enableRetinaScaling: false,
         width: 1024, // Explicit width
-        height: 768  // Explicit height
+        height: 1024 // Explicit height (Square)
       });
       
       // Force a render immediately to ensure canvas is ready
@@ -164,7 +164,7 @@
       // Calculate available width (minus padding)
       const availableWidth = wrapper.clientWidth - 24;
       const baseWidth = 1024;
-      const baseHeight = 768;
+      const baseHeight = 1024;
       
       // Determine scale needed to fit
       let scale = 1;
