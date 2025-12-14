@@ -410,20 +410,16 @@
           const scale = Math.min(1, maxW / img.width);
           img.scale(scale);
           
-          // Apply Multiply blending and Desaturation (Grayscale)
+          // Filters removed per request
           img.set({ 
             left: center.x, 
             top: center.y, 
             originX: 'center', 
             originY: 'center',
-            globalCompositeOperation: 'multiply',
             // Disable object caching to prevent "incomplete" or glitchy rendering on mobile GPUs
             objectCaching: false 
           });
           
-          img.filters.push(new fabric.Image.filters.Grayscale());
-          img.applyFilters();
-
           canvas.add(img);
           canvas.setActiveObject(img);
           canvas.requestRenderAll();
