@@ -147,10 +147,11 @@
         cornerColor: '#ffffff',
         cornerStrokeColor: '#22c55e', // Accent color
         borderColor: '#22c55e',
-        cornerSize: 20,        // Larger handles
-        padding: 10,           // More space around object
+        cornerSize: 40,        // Even larger handles
+        padding: 15,           // More space around object
         cornerStyle: 'circle', // Modern rounded corners
-        borderScaleFactor: 3,  // Thicker border line
+        borderScaleFactor: 4,  // Thicker border line
+        rotatingPointOffset: 150 // Even longer stem for rotation
       });
 
       // Initialize Fabric canvas
@@ -351,10 +352,6 @@
       // Add Text
       const addTextBtn = document.getElementById('addTextBtn');
       addTextBtn.addEventListener('click', () => {
-        // Debug alert to confirm library is loaded and event fires
-        // If you see this, Fabric is working!
-        // alert('Adding text... (Fabric version: ' + fabric.version + ')');
-        
         const text = new fabric.IText('Double-click to Edit', {
           left: canvas.getWidth() / 2,
           top: canvas.getHeight() / 2,
@@ -364,6 +361,17 @@
           fontSize: 32,
           fill: '#000000',
         });
+
+        // Clear default text on first edit (double-tap)
+        text.isFirstEdit = true;
+        text.on('editing:entered', () => {
+            if (text.isFirstEdit) {
+                text.text = '';
+                text.isFirstEdit = false;
+                canvas.requestRenderAll();
+            }
+        });
+
         canvas.add(text);
         canvas.setActiveObject(text);
         canvas.renderAll();
@@ -559,12 +567,12 @@
           canvas.add(img);
           canvas.setActiveObject(img);
           
-          // Apply Multiply and Grayscale immediately
+          // Apply Multiply blend mode
           const curW = img.getScaledWidth();
           const curH = img.getScaledHeight();
 
           img.set('globalCompositeOperation', 'multiply');
-          img.filters.push(new fabric.Image.filters.Grayscale());
+          // img.filters.push(new fabric.Image.filters.Grayscale());
           img.applyFilters();
 
           // Restore dimensions
