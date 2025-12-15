@@ -141,6 +141,18 @@
         return;
       }
 
+      // Customize Fabric selection controls (Thicker lines, larger handles for mobile)
+      fabric.Object.prototype.set({
+        transparentCorners: false,
+        cornerColor: '#ffffff',
+        cornerStrokeColor: '#22c55e', // Accent color
+        borderColor: '#22c55e',
+        cornerSize: 20,        // Larger handles
+        padding: 10,           // More space around object
+        cornerStyle: 'circle', // Modern rounded corners
+        borderScaleFactor: 3,  // Thicker border line
+      });
+
       // Initialize Fabric canvas
       const canvas = new fabric.Canvas('c', {
         backgroundColor: '#ffffff',
@@ -222,8 +234,9 @@
       // Calculate available height (window height minus header/footer estimate)
       const availableHeight = window.innerHeight - 180;
 
-      const baseWidth = 1024;
-      const baseHeight = 1024;
+      // Use current internal canvas dimensions
+      const baseWidth = canvas.width;
+      const baseHeight = canvas.height;
       
       // Determine scale needed to fit both width and height
       const scaleW = availableWidth / baseWidth;
@@ -252,20 +265,14 @@
     // Keep current background image reference
     let bgImage = null;
 
-    // Utilities
-    function fitBackgroundToCanvas(img) {
-      const cw = canvas.getWidth();
-      const ch = canvas.getHeight();
-      const scaleX = cw / img.width;
-      const scaleY = ch / img.height;
-      const scale = Math.min(scaleX, scaleY);
-      img.scale(scale);
-      img.set({ left: cw/2, top: ch/2, originX: 'center', originY: 'center', selectable: false, evented: false });
-    }
-
     function setBackgroundFromURL(url) {
       if (!url) {
-        canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
+        // Revert to square if clearing background
+        canvas.setDimensions({ width: 1024, height: 1024 });
+        canvas.setBackgroundImage(null, () => {
+            canvas.renderAll();
+            resizeCanvas();
+        });
         bgImage = null;
         return;
       }
@@ -280,9 +287,40 @@
         imgEl.onload = () => {
           const img = new fabric.Image(imgEl);
           bgImage = img;
-          fitBackgroundToCanvas(img);
-          canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-          document.body.style.cursor = 'default';
+          
+          // Resize canvas to match image aspect ratio (max 1024px)
+          const maxDim = 1024;
+          const ar = img.width / img.height;
+          let newW, newH;
+          
+          if (ar >= 1) {
+              newW = maxDim;
+              newH = maxDim / ar;
+          } else {
+              newW = maxDim * ar;
+              newH = maxDim;
+          }
+          
+          // Update internal canvas size
+          canvas.setDimensions({ width: Math.round(newW), height: Math.round(newH) });
+          
+          // Fit image to canvas
+          img.scaleToWidth(canvas.width);
+          img.scaleToHeight(canvas.height);
+          img.set({ 
+              left: canvas.width / 2, 
+              top: canvas.height / 2, 
+              originX: 'center', 
+              originY: 'center', 
+              selectable: false, 
+              evented: false 
+          });
+
+          canvas.setBackgroundImage(img, () => {
+              canvas.renderAll();
+              resizeCanvas(); // Update CSS display size
+              document.body.style.cursor = 'default';
+          });
         };
         
         imgEl.onerror = () => {
