@@ -171,10 +171,44 @@
       let lastPosX;
       let lastPosY;
 
+      // Smart Selection Bias: Track last active object to prevent accidental panning
+      let lastSelected = null;
+      canvas.on('selection:created', (e) => lastSelected = e.target);
+      canvas.on('selection:updated', (e) => lastSelected = e.target);
+      canvas.on('object:removed', (e) => {
+          if (e.target === lastSelected) lastSelected = null;
+      });
+
       canvas.on('mouse:down', function(opt) {
         const evt = opt.e;
         // If user clicks an object, don't pan
-        if (opt.target) return;
+        if (opt.target) {
+            lastSelected = opt.target;
+            return;
+        }
+        
+        // Bias: If clicking near the previously selected object, re-select it and don't pan
+        if (lastSelected && canvas.getObjects().includes(lastSelected)) {
+            const pointer = canvas.getPointer(evt);
+            const bound = lastSelected.getBoundingRect();
+            const pad = 60; // 60px buffer around object
+            
+            if (pointer.x >= bound.left - pad &&
+                pointer.x <= bound.left + bound.width + pad &&
+                pointer.y >= bound.top - pad &&
+                pointer.y <= bound.top + bound.height + pad) {
+                
+                // Restore selection if lost
+                if (!canvas.getActiveObject()) {
+                    canvas.setActiveObject(lastSelected);
+                    canvas.requestRenderAll();
+                }
+                return; // Skip panning
+            }
+        }
+        
+        // If we are here, we truly clicked the background
+        lastSelected = null;
         
         isDragging = true;
         canvas.selection = false; 
