@@ -1,818 +1,209 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Single-File Editor</title>
-  <!-- Google Fonts (Top 15 Popular) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Lato&family=Merriweather&family=Montserrat&family=Noto+Sans&family=Open+Sans&family=Oswald&family=Pacifico&family=Playfair+Display&family=Poppins&family=Raleway&family=Roboto&family=Roboto+Mono&family=Source+Sans+Pro&family=Ubuntu&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --accent: #22c55e;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --border: #334155;
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text); }
-    header { display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); background: #0b1220; position: sticky; top: 0; z-index: 10; }
-    header h1 { margin: 0; font-size: 18px; letter-spacing: 0.3px; }
-    .toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-    .toolbar-group { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-    .toolbar select, .toolbar input[type="number"], .toolbar input[type="text"], .toolbar button, .toolbar label {
-      background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 14px;
-    }
-    .toolbar button { cursor: pointer; }
-    .toolbar button.primary { background: var(--accent); color: #052814; border: none; font-weight: 600; }
-    .toolbar button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .toolbar .sep { width:1px; height:28px; background: var(--border); margin: 0 4px; }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Single-File Editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Lato&family=Merriweather&family=Montserrat&family=Noto+Sans&family=Open+Sans&family=Oswald&family=Pacifico&family=Playfair+Display&family=Poppins&family=Raleway&family=Roboto&family=Roboto+Mono&family=Source+Sans+Pro&family=Ubuntu&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --accent: #22c55e;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #334155;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text); }
+    header { display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); background: #0b1220; position: sticky; top: 0; z-index: 10; }
+    header h1 { margin: 0; font-size: 18px; letter-spacing: 0.3px; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .toolbar-group { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .toolbar select, .toolbar input[type="number"], .toolbar input[type="text"], .toolbar button, .toolbar label {
+      background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 14px;
+    }
+    .toolbar button { cursor: pointer; }
+    .toolbar button.primary { background: var(--accent); color: #052814; border: none; font-weight: 600; }
+    .toolbar button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .toolbar .sep { width:1px; height:28px; background: var(--border); margin: 0 4px; }
 
-    main { display:grid; grid-template-columns: 1fr; gap: 12px; padding: 12px; }
-    .controls { display:flex; flex-direction:column; gap:8px; }
+    main { display:grid; grid-template-columns: 1fr; gap: 12px; padding: 12px; }
+    .controls { display:flex; flex-direction:column; gap:8px; }
 
-  .canvas-wrap { background: #f0f0f0; border:1px solid var(--border); border-radius: 10px; display:flex; align-items:center; justify-content:center; min-height: 70vh; position: relative; overflow:auto; }
-  /* Fix: Do not set background on 'canvas' tag directly, as Fabric.js creates an upper canvas overlay that must remain transparent. */
-  .canvas-container { background: #ffffff; box-shadow: 0 0 0 1px var(--border) inset; }
+  .canvas-wrap { background: #f0f0f0; border:1px solid var(--border); border-radius: 10px; display:flex; align-items:center; justify-content:center; min-height: 70vh; position: relative; overflow:auto; }
+  /* Fix: Do not set background on 'canvas' tag directly, as Fabric.js creates an upper canvas overlay that must remain transparent. */
+  .canvas-container { background: #ffffff; box-shadow: 0 0 0 1px var(--border) inset; }
 
-    footer { padding: 12px 16px; border-top: 1px solid var(--border); color: var(--muted); }
-    .hint { color: var(--muted); font-size: 12px; }
-    a.link { color: #93c5fd; text-decoration: none; }
-  </style>
-  <!-- Fabric.js loaded locally for reliability -->
-  <script src="https://cdn.jsdelivr.net/npm/fabric@4.6.0/dist/fabric.min.js"></script>
+    footer { padding: 12px 16px; border-top: 1px solid var(--border); color: var(--muted); }
+    .hint { color: var(--muted); font-size: 12px; }
+    a.link { color: #93c5fd; text-decoration: none; }
+  </style>
+    <script src="https://cdn.jsdelivr.net/npm/fabric@4.6.0/dist/fabric.min.js"></script>
 </head>
 <body>
-  <header>
-    <div class="toolbar">
-      <!-- Level 1: Always Visible -->
-      <div id="toolbar-main" class="toolbar-group">
-        <label>
-          Item:
-          <select id="bgSelect">
-            <option value="">None</option>
-            <option value="w_pen.png">Wooden Pen</option>
-            <option value="cuttlery.png">Cuttlery</option>
-            <option value="tumbler.png">Tumbler</option>
-            <option value="mug.png">Mug</option>
-            <option value="notebook.png">Notebook</option>
-            <option value="kc_round.png">Keychain-Round</option>
-            <option value="kc_rect.png">Keychain-Rectangle</option>
-          </select>
-        </label>
+  <header>
+    <div class="toolbar">
+            <div id="toolbar-main" class="toolbar-group">
+        <label>
+          Item:
+          <select id="bgSelect">
+            <option value="">None</option>
+            <option value="w_pen.png">Wooden Pen</option>
+            <option value="cuttlery.png">Cuttlery</option>
+            <option value="tumbler.png">Tumbler</option>
+            <option value="mug.png">Mug</option>
+            <option value="notebook.png">Notebook</option>
+            <option value="kc_round.png">Keychain-Round</option>
+            <option value="kc_rect.png">Keychain-Rectangle</option>
+          </select>
+        </label>
 
-        <button id="addTextBtn">Add Text</button>
+        <button id="addTextBtn">Add Text</button>
 
-        <input id="imageInput" type="file" accept="image/*" style="display:none" />
-        <button id="insertImageBtn">Insert Image</button>
+        <input id="imageInput" type="file" accept="image/*" style="display:none" />
+        <button id="insertImageBtn">Insert Image</button>
 
-        <button id="deleteBtn" title="Delete Selected">Delete</button>
-        <button id="bringForwardBtn" title="Bring Forward">↑</button>
-        <button id="sendBackwardsBtn" title="Send Backward">↓</button>
+        <button id="deleteBtn" title="Delete Selected">Delete</button>
+        <button id="bringForwardBtn" title="Bring Forward">↑</button>
+        <button id="sendBackwardsBtn" title="Send Backward">↓</button>
 
-        <button id="exportBtn" class="primary">PNG</button>
-        <button id="exportSvgBtn">SVG</button>
-        <button id="emailBtn">Email</button>
-      </div>
+        <button id="exportBtn" class="primary">PNG</button>
+        <button id="exportSvgBtn">SVG</button>
+        <button id="emailBtn">Email</button>
+      </div>
 
-      <!-- Level 2: Text Selected -->
-      <div id="toolbar-text" class="toolbar-group" style="display:none; border-left: 1px solid var(--border); padding-left: 8px;">
-        <select id="fontFamily">
-          <option value="Roboto">Roboto</option>
-          <option value="Open Sans">Open Sans</option>
-          <option value="Lato">Lato</option>
-          <option value="Montserrat">Montserrat</option>
-          <option value="Oswald">Oswald</option>
-          <option value="Merriweather">Merriweather</option>
-          <option value="Playfair Display">Playfair Display</option>
-          <option value="Dancing Script">Dancing Script</option>
-          <option value="Pacifico">Pacifico</option>
-          <option value="Poppins">Poppins</option>
-          <option value="Raleway">Raleway</option>
-          <option value="Noto Sans">Noto Sans</option>
-          <option value="Source Sans Pro">Source Sans Pro</option>
-          <option value="Ubuntu">Ubuntu</option>
-          <option value="Roboto Mono">Roboto Mono</option>
-          <option value="Arial">Arial</option>
-        </select>
-        <button id="loadFontsBtn" title="Load local system fonts">Local</button>
-        
-        <input id="googleFontInput" type="text" placeholder="Google Font" style="width: 100px;" />
-        <button id="loadGoogleFontBtn">Get</button>
-        
-        <input id="fontSize" type="number" min="8" max="200" step="1" value="32" style="width: 60px;" />
-        <button id="boldBtn"><strong>B</strong></button>
-        <button id="italicBtn"><em>I</em></button>
-      </div>
+            <div id="toolbar-text" class="toolbar-group" style="display:none; border-left: 1px solid var(--border); padding-left: 8px;">
+        <select id="fontFamily">
+          <option value="Roboto">Roboto</option>
+          <option value="Open Sans">Open Sans</option>
+          <option value="Lato">Lato</option>
+          <option value="Montserrat">Montserrat</option>
+          <option value="Oswald">Oswald</option>
+          <option value="Merriweather">Merriweather</option>
+          <option value="Playfair Display">Playfair Display</option>
+          <option value="Dancing Script">Dancing Script</option>
+          <option value="Pacifico">Pacifico</option>
+          <option value="Poppins">Poppins</option>
+          <option value="Raleway">Raleway</option>
+          <option value="Noto Sans">Noto Sans</option>
+          <option value="Source Sans Pro">Source Sans Pro</option>
+          <option value="Ubuntu">Ubuntu</option>
+          <option value="Arial">Arial</option>
+        </select>
+        <button id="loadFontsBtn" title="Load local system fonts">Local</button>
+        
+        <input id="googleFontInput" type="text" placeholder="Google Font" style="width: 100px;" />
+        <button id="loadGoogleFontBtn">Get</button>
+        
+        <input id="fontSize" type="number" min="8" max="200" step="1" value="32" style="width: 60px;" />
+        <button id="boldBtn"><strong>B</strong></button>
+        <button id="italicBtn"><em>I</em></button>
+      </div>
 
-      <!-- Level 3: Image Selected -->
-      <div id="toolbar-image" class="toolbar-group" style="display:none; border-left: 1px solid var(--border); padding-left: 8px;">
-        <button id="invertBtn" title="Invert Colors">Invert</button>
-      </div>
-    </div>
-  </header>
+            <div id="toolbar-image" class="toolbar-group" style="display:none; border-left: 1px solid var(--border); padding-left: 8px;">
+        <button id="invertBtn" title="Invert Colors">Invert</button>
+      </div>
+    </div>
+  </header>
 
-  <main>
-    <!-- Left project panel removed per request; canvas now occupies full width -->
-    <section class="canvas-wrap">
-      <canvas id="c" width="1024" height="1024"></canvas>
-    </section>
-  </main>
+  <main>
+        <section class="canvas-wrap">
+      <canvas id="c" width="1024" height="1024"></canvas>
+    </section>
+  </main>
 
-  <footer>
-    Export downloads a PNG locally. Email opens your mail client with a prefilled message. To auto-send emails, you need a small backend; see notes below.
-  </footer>
+  <footer>
+    Export downloads a PNG locally. Email opens your mail client with a prefilled message. To auto-send emails, you need a small backend; see notes below.
+  </footer>
 
-  <script>
-    // Defer initialization until window load to ensure scripts and DOM are ready
-    window.addEventListener('load', () => {
-      // Guard: ensure Fabric.js loaded
-      if (typeof fabric === 'undefined') {
-        alert('Fabric.js failed to load. Please check your internet connection or use a local server.');
-        return;
-      }
+  <script>
+    // Defer initialization until window load to ensure scripts and DOM are ready
+    window.addEventListener('load', () => {
+      // Guard: ensure Fabric.js loaded
+      if (typeof fabric === 'undefined') {
+        alert('Fabric.js failed to load. Please check your internet connection or use a local server.');
+        return;
+      }
 
-      // Customize Fabric selection controls (Thicker lines, larger handles for mobile)
-      fabric.Object.prototype.set({
-        transparentCorners: false,
-        cornerColor: '#ffffff',
-        cornerStrokeColor: '#22c55e', // Accent color
-        borderColor: '#22c55e',
-        cornerSize: 40,        // Even larger handles
-        padding: 15,           // More space around object
-        cornerStyle: 'circle', // Modern rounded corners
-        borderScaleFactor: 4,  // Thicker border line
-        rotatingPointOffset: 150 // Even longer stem for rotation
-      });
+      // Customize Fabric selection controls (Thicker lines, larger handles for mobile)
+      fabric.Object.prototype.set({
+        transparentCorners: false,
+        cornerColor: '#ffffff',
+        cornerStrokeColor: '#22c55e', // Accent color
+        borderColor: '#22c55e',
+        cornerSize: 40,        // Even larger handles
+        padding: 15,           // More space around object
+        cornerStyle: 'circle', // Modern rounded corners
+        borderScaleFactor: 4,  // Thicker border line
+        rotatingPointOffset: 300 // UPDATED: Changed from 150 to 300 for a longer stem
+      });
 
-      // Initialize Fabric canvas
-      const canvas = new fabric.Canvas('c', {
-        backgroundColor: '#ffffff',
-        preserveObjectStacking: true,
-        selection: false, // Disable group selection to allow panning
-        enableRetinaScaling: false,
-        width: 1024, // Explicit width
-        height: 1024 // Explicit height (Square)
-      });
-      
-      // Force a render immediately to ensure canvas is ready
-      canvas.renderAll();
+      // Initialize Fabric canvas
+      const canvas = new fabric.Canvas('c', {
+        backgroundColor: '#ffffff',
+        preserveObjectStacking: true,
+        selection: false, // Disable group selection to allow panning
+        enableRetinaScaling: false,
+        width: 1024, // Explicit width
+        height: 1024 // Explicit height (Square)
+      });
+      
+      // Force a render immediately to ensure canvas is ready
+      canvas.renderAll();
 
-      // Limit rotation to 15 degree steps
-      canvas.on('object:rotating', (e) => {
-        e.target.angle = Math.round(e.target.angle / 15) * 15;
-      });
+      // Limit rotation to 15 degree steps
+      canvas.on('object:rotating', (e) => {
+        e.target.angle = Math.round(e.target.angle / 15) * 15;
+      });
 
-      // Dynamic Rotation Stem: Set length to 1/2 the longer side of the object
-      function adjustRotationStem(e) {
-          const obj = e.target;
-          if (!obj) return;
-          const dim = Math.max(obj.getScaledWidth(), obj.getScaledHeight());
-          // Set stem to 1/2 longer side, but keep a minimum of 60px for touch usability
-          obj.set('rotatingPointOffset', Math.max(60, dim / 2)); 
-      }
-      canvas.on('selection:created', adjustRotationStem);
-      canvas.on('selection:updated', adjustRotationStem);
-      canvas.on('object:scaling', adjustRotationStem);
+      // Dynamic Rotation Stem: Set length to 1/2 the longer side of the object
+      function adjustRotationStem(e) {
+          const obj = e.target;
+          if (!obj) return;
+          const dim = Math.max(obj.getScaledWidth(), obj.getScaledHeight());
+          // Set stem to 1/2 longer side, but keep a minimum of 120px for touch usability
+          obj.set('rotatingPointOffset', Math.max(120, dim / 2)); // UPDATED: Min changed from 60 to 120
+      }
+      canvas.on('selection:created', adjustRotationStem);
+      canvas.on('selection:updated', adjustRotationStem);
+      canvas.on('object:scaling', adjustRotationStem);
 
-      // Panning Logic (Mouse/Touch Drag on background)
-      let isDragging = false;
-      let lastPosX;
-      let lastPosY;
+      // Panning Logic (Mouse/Touch Drag on background)
+      let isDragging = false;
+      let lastPosX;
+      let lastPosY;
 
-      // Smart Selection Bias: Track last active object to prevent accidental panning
-      let lastSelected = null;
-      canvas.on('selection:created', (e) => lastSelected = e.target);
-      canvas.on('selection:updated', (e) => lastSelected = e.target);
-      canvas.on('object:removed', (e) => {
-          if (e.target === lastSelected) lastSelected = null;
-      });
+      // Smart Selection Bias: Track last active object to prevent accidental panning
+      let lastSelected = null;
+      canvas.on('selection:created', (e) => lastSelected = e.target);
+      canvas.on('selection:updated', (e) => lastSelected = e.target);
+      canvas.on('object:removed', (e) => {
+          if (e.target === lastSelected) lastSelected = null;
+      });
 
-      canvas.on('mouse:down', function(opt) {
-        const evt = opt.e;
-        // If user clicks an object, don't pan
-        if (opt.target) {
-            lastSelected = opt.target;
-            return;
-        }
-        
-        // Bias: If clicking near the previously selected object, re-select it and don't pan
-        if (lastSelected && canvas.getObjects().includes(lastSelected)) {
-            const pointer = canvas.getPointer(evt);
-            const bound = lastSelected.getBoundingRect();
-            const pad = 60; // 60px buffer around object
-            
-            if (pointer.x >= bound.left - pad &&
-                pointer.x <= bound.left + bound.width + pad &&
-                pointer.y >= bound.top - pad &&
-                pointer.y <= bound.top + bound.height + pad) {
-                
-                // Restore selection if lost
-                if (!canvas.getActiveObject()) {
-                    canvas.setActiveObject(lastSelected);
-                    canvas.requestRenderAll();
-                }
-                return; // Skip panning
-            }
-        }
-        
-        // If we are here, we truly clicked the background
-        lastSelected = null;
-        
-        isDragging = true;
-        canvas.selection = false; 
-        // Handle both mouse and touch events for coordinates
-        if (evt.type === 'touchstart') {
-            const touch = evt.touches[0];
-            lastPosX = touch.clientX;
-            lastPosY = touch.clientY;
-        } else {
-            lastPosX = evt.clientX;
-            lastPosY = evt.clientY;
-        }
-        canvas.setCursor('grabbing');
-      });
-
-      canvas.on('mouse:move', function(opt) {
-        if (isDragging) {
-          const evt = opt.e;
-          let clientX, clientY;
-          
-          if (evt.type === 'touchmove') {
-              const touch = evt.touches[0];
-              clientX = touch.clientX;
-              clientY = touch.clientY;
-          } else {
-              clientX = evt.clientX;
-              clientY = evt.clientY;
-          }
-
-          const vpt = canvas.viewportTransform;
-          vpt[4] += clientX - lastPosX;
-          vpt[5] += clientY - lastPosY;
-          canvas.requestRenderAll();
-          lastPosX = clientX;
-          lastPosY = clientY;
-        }
-      });
-
-      canvas.on('mouse:up', function(opt) {
-        if(isDragging) {
-            canvas.setViewportTransform(canvas.viewportTransform);
-            isDragging = false;
-            canvas.setCursor('default');
-        }
-      });
-
-    // Responsive Canvas Scaling
-    function resizeCanvas() {
-      const wrapper = document.querySelector('.canvas-wrap');
-      // Calculate available width (minus padding)
-      const availableWidth = wrapper.clientWidth - 24;
-      // Calculate available height (window height minus header/footer estimate)
-      const availableHeight = window.innerHeight - 180;
-
-      // Use current internal canvas dimensions
-      const baseWidth = canvas.width;
-      const baseHeight = canvas.height;
-      
-      // Determine scale needed to fit both width and height
-      const scaleW = availableWidth / baseWidth;
-      const scaleH = availableHeight / baseHeight;
-      
-      // Use the smaller scale to ensure it fits entirely, but don't scale up > 1
-      const scale = Math.min(scaleW, scaleH, 1);
-      
-      // Apply CSS scaling (visual only, keeps internal resolution high)
-      const finalW = baseWidth * scale;
-      const finalH = baseHeight * scale;
-      
-      // Update the wrapper and canvas styles
-      canvas.setDimensions({ width: finalW + 'px', height: finalH + 'px' }, { cssOnly: true });
-      
-      // Re-calculate offsets for correct mouse/touch mapping
-      canvas.calcOffset();
-      canvas.requestRenderAll();
-    }
-    
-    // Listen for window resize
-    window.addEventListener('resize', resizeCanvas);
-    // Initial call
-    setTimeout(resizeCanvas, 100);
-
-    // Keep current background image reference
-    let bgImage = null;
-
-    function setBackgroundFromURL(url) {
-      if (!url) {
-        // Revert to square if clearing background
-        canvas.setDimensions({ width: 1024, height: 1024 });
-        canvas.setBackgroundImage(null, () => {
-            canvas.renderAll();
-            resizeCanvas();
-        });
-        bgImage = null;
-        return;
-      }
-      
-      document.body.style.cursor = 'wait';
-
-      // Helper to load image with retry logic
-      const attemptLoad = (src, isRetry) => {
-        const imgEl = new Image();
-        imgEl.crossOrigin = 'anonymous';
-        
-        imgEl.onload = () => {
-          const img = new fabric.Image(imgEl);
-          bgImage = img;
-          
-          // Resize canvas to match image aspect ratio (max 1024px)
-          const maxDim = 1024;
-          const ar = img.width / img.height;
-          let newW, newH;
-          
-          if (ar >= 1) {
-              newW = maxDim;
-              newH = maxDim / ar;
-          } else {
-              newW = maxDim * ar;
-              newH = maxDim;
-          }
-          
-          // Update internal canvas size
-          canvas.setDimensions({ width: Math.round(newW), height: Math.round(newH) });
-          
-          // Fit image to canvas
-          img.scaleToWidth(canvas.width);
-          img.scaleToHeight(canvas.height);
-          img.set({ 
-              left: canvas.width / 2, 
-              top: canvas.height / 2, 
-              originX: 'center', 
-              originY: 'center', 
-              selectable: false, 
-              evented: false 
-          });
-
-          canvas.setBackgroundImage(img, () => {
-              canvas.renderAll();
-              resizeCanvas(); // Update CSS display size
-              document.body.style.cursor = 'default';
-          });
-        };
-        
-        imgEl.onerror = () => {
-          if (!isRetry && src.startsWith('http')) {
-            // Retry with a CORS proxy
-            console.warn('Direct load failed (CORS?), retrying with proxy...');
-            attemptLoad('https://api.allorigins.win/raw?url=' + encodeURIComponent(url), true);
-          } else {
-            document.body.style.cursor = 'default';
-            alert('Failed to load background image.\n\nThe server blocked access and the proxy also failed.\n\nWorkaround: Download the image to your computer and use the "Insert Image" button instead.');
-          }
-        };
-        
-        imgEl.src = src;
-      };
-
-      attemptLoad(url, false);
-    }
-
-    // Background dropdown
-    const bgSelect = document.getElementById('bgSelect');
-    bgSelect.addEventListener('change', (e) => {
-      setBackgroundFromURL(e.target.value);
-    });
-
-    // Canvas resize UI removed — canvas size is taken from the <canvas> element or controlled programmatically.
-
-      // Add Text
-      const addTextBtn = document.getElementById('addTextBtn');
-      addTextBtn.addEventListener('click', () => {
-        const text = new fabric.IText('Double-click to Edit', {
-          left: canvas.getWidth() / 2,
-          top: canvas.getHeight() / 2,
-          originX: 'center',
-          originY: 'center',
-          fontFamily: 'Arial',
-          fontSize: 32,
-          fill: '#000000',
-        });
-
-        // Select all text on first edit so typing replaces it
-        text.isFirstEdit = true;
-        text.on('editing:entered', () => {
-            if (text.isFirstEdit) {
-                text.selectAll();
-                text.isFirstEdit = false;
-            }
-        });
-
-        canvas.add(text);
-        canvas.setActiveObject(text);
-        canvas.renderAll();
-      });
-
-    // Load System Fonts
-    const loadFontsBtn = document.getElementById('loadFontsBtn');
-    loadFontsBtn.addEventListener('click', async () => {
-      if (!('queryLocalFonts' in window)) {
-        alert('Your browser does not support the Local Font Access API. Try using Chrome or Edge on a secure connection (localhost or https).');
-        return;
-      }
-      try {
-        // Request permission and get fonts
-        const fonts = await window.queryLocalFonts();
-        
-        // Extract unique families
-        const families = new Set(fonts.map(f => f.family));
-        const sorted = [...families].sort();
-        
-        // Save current selection
-        const currentVal = fontFamily.value;
-        
-        // Clear and repopulate
-        fontFamily.innerHTML = '';
-        sorted.forEach(fam => {
-          const opt = document.createElement('option');
-          opt.value = fam;
-          opt.textContent = fam;
-          fontFamily.appendChild(opt);
-        });
-        
-        // Restore selection if possible
-        if (families.has(currentVal)) {
-          fontFamily.value = currentVal;
-        } else if (sorted.length > 0) {
-          fontFamily.value = sorted[0];
-        }
-        
-        alert(`Successfully loaded ${sorted.length} fonts from your system!`);
-      } catch (err) {
-        console.error(err);
-        alert('Could not load fonts: ' + err.message);
-      }
-    });
-
-    // Load Google Font by Name
-    const googleFontInput = document.getElementById('googleFontInput');
-    const loadGoogleFontBtn = document.getElementById('loadGoogleFontBtn');
-    
-    loadGoogleFontBtn.addEventListener('click', () => {
-      const name = googleFontInput.value.trim();
-      if (!name) return;
-      
-      // Construct Google Fonts URL
-      // e.g. https://fonts.googleapis.com/css2?family=Lobster&display=swap
-      const linkHref = `https://fonts.googleapis.com/css2?family=${name.replace(/ /g, '+')}&display=swap`;
-      
-      // Create link element
-      const link = document.createElement('link');
-      link.href = linkHref;
-      link.rel = 'stylesheet';
-      
-      link.onload = () => {
-        // Add to dropdown
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = name;
-        fontFamily.appendChild(opt);
-        fontFamily.value = name;
-        
-        // Apply
-        applyTextStyles();
-        
-        // Feedback
-        googleFontInput.value = '';
-        googleFontInput.placeholder = 'Loaded: ' + name;
-        
-        // Force Fabric to re-render after a slight delay to ensure font is ready
-        setTimeout(() => canvas.requestRenderAll(), 500);
-      };
-      
-      link.onerror = () => {
-        alert(`Could not load Google Font "${name}". Please check the spelling exactly as it appears on fonts.google.com.`);
-      };
-      
-      document.head.appendChild(link);
-    });
-
-    // Font family & size controls apply to active text
-    const fontFamily = document.getElementById('fontFamily');
-    const fontSize = document.getElementById('fontSize');
-    function applyTextStyles() {
-      const obj = canvas.getActiveObject();
-      if (!obj || !(obj instanceof fabric.IText)) return;
-      obj.set({
-        fontFamily: fontFamily.value,
-        fontSize: parseInt(fontSize.value, 10) || obj.fontSize,
-        fill: '#000000', // enforce black text color
-      });
-      obj.set('fontWeight', boldOn ? 'bold' : 'normal');
-      obj.set('fontStyle', italicOn ? 'italic' : 'normal');
-      canvas.requestRenderAll();
-    }
-    fontFamily.addEventListener('change', applyTextStyles);
-    fontSize.addEventListener('change', applyTextStyles);
-
-    // Bold & Italic toggles
-    let boldOn = false;
-    let italicOn = false;
-    const boldBtn = document.getElementById('boldBtn');
-    const italicBtn = document.getElementById('italicBtn');
-    function updateToggleStyles() {
-      boldBtn.style.outline = boldOn ? '2px solid var(--accent)' : 'none';
-      italicBtn.style.outline = italicOn ? '2px solid var(--accent)' : 'none';
-    }
-    boldBtn.addEventListener('click', () => {
-      boldOn = !boldOn; updateToggleStyles(); applyTextStyles();
-    });
-    italicBtn.addEventListener('click', () => {
-      italicOn = !italicOn; updateToggleStyles(); applyTextStyles();
-    });
-
-    // Insert image
-    const imageInput = document.getElementById('imageInput');
-    document.getElementById('insertImageBtn').addEventListener('click', () => imageInput.click());
-
-    // Helper: Compress/Resize image before loading to canvas
-    function compressAndLoadImage(file, callback) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imgObj = new Image();
-        imgObj.onload = () => {
-          // Create offscreen canvas
-          const cvs = document.createElement('canvas');
-          const ctx = cvs.getContext('2d');
-          
-          // Max dimension 1280px is usually safe and < 500KB with JPEG compression
-          const MAX_SIZE = 1280; 
-          let w = imgObj.width;
-          let h = imgObj.height;
-          
-          if (w > MAX_SIZE || h > MAX_SIZE) {
-            if (w > h) {
-              h *= MAX_SIZE / w;
-              w = MAX_SIZE;
-            } else {
-              w *= MAX_SIZE / h;
-              h = MAX_SIZE;
-            }
-          }
-          
-          cvs.width = w;
-          cvs.height = h;
-          ctx.drawImage(imgObj, 0, 0, w, h);
-          
-          // Export as JPEG 0.7 quality to reduce size
-          const dataURL = cvs.toDataURL('image/jpeg', 0.7);
-          callback(dataURL);
-        };
-        imgObj.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    imageInput.addEventListener('change', (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      
-      document.body.style.cursor = 'wait';
-
-      compressAndLoadImage(file, (dataURL) => {
-        fabric.Image.fromURL(dataURL, (img) => {
-          document.body.style.cursor = 'default';
-
-          // Use viewport center so it appears where the user is looking (important if zoomed)
-          const center = canvas.getVpCenter();
-
-          // Scale to reasonable size (50% of canvas width) to avoid memory issues on mobile
-          const maxW = canvas.getWidth() * 0.5;
-          const scale = Math.min(1, maxW / img.width);
-          img.scale(scale);
-          
-          // Initial setup: Normal rendering
-          img.set({ 
-            left: center.x, 
-            top: center.y, 
-            originX: 'center', 
-            originY: 'center',
-            objectCaching: false 
-          });
-          
-          canvas.add(img);
-          canvas.setActiveObject(img);
-          
-          // Apply Multiply blend mode
-          const curW = img.getScaledWidth();
-          const curH = img.getScaledHeight();
-
-          img.set('globalCompositeOperation', 'multiply');
-          // img.filters.push(new fabric.Image.filters.Grayscale());
-          img.applyFilters();
-
-          // Restore dimensions
-          if (img.width > 0) {
-              img.set({
-                  scaleX: curW / img.width,
-                  scaleY: curH / img.height
-              });
-          }
-
-          canvas.requestRenderAll();
-        });
-      });
-
-      // reset input to allow same file re-insert
-      imageInput.value = '';
-    });
-
-    // Invert Button Logic
-    document.getElementById('invertBtn').addEventListener('click', () => {
-      const obj = canvas.getActiveObject();
-      if (!obj) return;
-
-      if (obj.type === 'image') {
-        // Toggle Invert filter
-        const hasInvert = obj.filters.some(f => f instanceof fabric.Image.filters.Invert);
-        if (hasInvert) {
-          obj.filters = obj.filters.filter(f => !(f instanceof fabric.Image.filters.Invert));
-        } else {
-          obj.filters.push(new fabric.Image.filters.Invert());
-        }
-        obj.applyFilters();
-      } else if (obj.type === 'i-text' || obj.type === 'text') {
-        // Simple color inversion for text (Black <-> White)
-        const currentFill = obj.fill;
-        // Check for black-ish colors
-        if (currentFill === '#000000' || currentFill === 'black' || currentFill === '#000') {
-            obj.set('fill', '#ffffff');
-        } else {
-            obj.set('fill', '#000000');
-        }
-      }
-      canvas.requestRenderAll();
-    });
-
-    // Delete selected
-    document.getElementById('deleteBtn').addEventListener('click', () => {
-      const obj = canvas.getActiveObject();
-      if (!obj) return;
-      canvas.remove(obj);
-      canvas.discardActiveObject();
-      canvas.requestRenderAll();
-    });
-    // Also support Delete key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Delete') {
-        const obj = canvas.getActiveObject();
-        if (obj) { canvas.remove(obj); canvas.discardActiveObject(); canvas.requestRenderAll(); }
-      }
-    });
-
-    // Z-Order controls
-    document.getElementById('bringForwardBtn').addEventListener('click', () => {
-      const obj = canvas.getActiveObject();
-      if (obj) {
-        canvas.bringForward(obj);
-        canvas.requestRenderAll();
-      }
-    });
-    document.getElementById('sendBackwardsBtn').addEventListener('click', () => {
-      const obj = canvas.getActiveObject();
-      if (obj) {
-        canvas.sendBackwards(obj);
-        canvas.requestRenderAll();
-      }
-    });
-
-    // Export PNG
-    function exportPNG() {
-      // Render with background included
-      const dataURL = canvas.toDataURL({ format: 'png', quality: 1 });
-      const a = document.createElement('a');
-      a.href = dataURL;
-      a.download = 'project-export.png';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      return dataURL; // Useful for email prefill
-    }
-    document.getElementById('exportBtn').addEventListener('click', exportPNG);
-
-    // Export SVG
-    function exportSVG() {
-      const svgContent = canvas.toSVG();
-      const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'project-export.svg';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
-    document.getElementById('exportSvgBtn').addEventListener('click', exportSVG);
-
-    // Email export
-    document.getElementById('emailBtn').addEventListener('click', () => {
-      const dataURL = exportPNG();
-      // Prefill email. Note: attaching images via mailto isn't reliably supported.
-      // We'll include the data URL inline and suggestion text.
-      const subject = encodeURIComponent('Editor Export - project-export.png');
-      const body = encodeURIComponent(
-        'Hi,\\n\\nAttached is the export. If no attachment appears, please use the downloaded file and attach it manually.\\n\\nData URL preview (copy if needed):\\n' + dataURL.substring(0, 100) + '...\\n\\nThanks.'
-      );
-      const mailto = `mailto:blaychris@gmail.com?subject=${subject}&body=${body}`;
-      window.location.href = mailto;
-    });
-
-    // Keep toolbar reflecting selected text object
-    canvas.on('selection:created', updateToolbar);
-    canvas.on('selection:updated', updateToolbar);
-    canvas.on('selection:cleared', updateToolbar);
-
-    function updateToolbar() {
-      const obj = canvas.getActiveObject();
-      const textToolbar = document.getElementById('toolbar-text');
-      const imageToolbar = document.getElementById('toolbar-image');
-      
-      // Reset visibility
-      textToolbar.style.display = 'none';
-      imageToolbar.style.display = 'none';
-
-      if (obj) {
-        if (obj instanceof fabric.IText || obj.type === 'text' || obj.type === 'i-text') {
-            textToolbar.style.display = 'flex';
-            // Sync values
-            fontFamily.value = obj.fontFamily || fontFamily.value;
-            fontSize.value = obj.fontSize || fontSize.value;
-            boldOn = (obj.fontWeight === 'bold');
-            italicOn = (obj.fontStyle === 'italic');
-            updateToggleStyles();
-        } else if (obj instanceof fabric.Image || obj.type === 'image') {
-            imageToolbar.style.display = 'flex';
-        }
-      }
-    }
-
-      // Initial state
-      updateToggleStyles();
-
-      // Mobile Pinch Zoom
-      const canvasEl = canvas.upperCanvasEl;
-      let initialDistance = 0;
-      let initialZoom = 1;
-
-      canvasEl.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 2) {
-          e.preventDefault(); // Prevent page zoom
-          const touch1 = e.touches[0];
-          const touch2 = e.touches[1];
-          initialDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
-          initialZoom = canvas.getZoom();
-          canvas.selection = false; // Disable selection box while zooming
-        }
-      }, { passive: false });
-
-      canvasEl.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 2) {
-          e.preventDefault();
-          const touch1 = e.touches[0];
-          const touch2 = e.touches[1];
-          const currentDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
-          
-          if (initialDistance > 0) {
-            const scale = currentDistance / initialDistance;
-            let newZoom = initialZoom * scale;
-            
-            // Limit zoom levels (0.1x to 5x)
-            if (newZoom > 5) newZoom = 5;
-            if (newZoom < 0.1) newZoom = 0.1;
-            
-            // Zoom to center of the two fingers
-            const center = {
-              x: (touch1.clientX + touch2.clientX) / 2,
-              y: (touch1.clientY + touch2.clientY) / 2
-            };
-            
-            // Convert client coordinates to canvas coordinates
-            const rect = canvasEl.getBoundingClientRect();
-            const point = new fabric.Point(center.x - rect.left, center.y - rect.top);
-            
-            canvas.zoomToPoint(point, newZoom);
-          }
-        }
-      }, { passive: false });
-
-      canvasEl.addEventListener('touchend', () => {
-        canvas.selection = true; // Re-enable selection
-        initialDistance = 0;
-      });
-    });
-  </script>
-</body>
-</html>
+      canvas.on('mouse:down', function(opt) {
+        const evt = opt.e;
+        // If user clicks an object, don't pan
+        if (opt.target) {
+            lastSelected = opt.target;
+            return;
+        }
+        
+        // Bias: If clicking near the previously selected object, re-select it and don't pan
+        if (lastSelected && canvas.getObjects().includes(lastSelected)) {
+            const pointer = canvas.getPointer(evt);
+            const bound = lastSelected.getBoundingRect();
+            const pad = 60; // 60px buffer around object
+            
+            if (pointer.x >= bound.left - pad &&
+                pointer.x <= bound.left + bound.width + pad &&
+                pointer.y >= bound.top - pad &&
+                pointer.y <= bound.top + bound.height + pad) {
+                
+                // Restore selection if lost
+                if (!canvas.getActiveObject()) {
+                    canvas.setActiveObject(lastSelected);
+                    canvas.requestRenderAll
