@@ -396,12 +396,55 @@
     // Insert image
     const imageInput = document.getElementById('imageInput');
     document.getElementById('insertImageBtn').addEventListener('click', () => imageInput.click());
+
+    // Helper: Compress/Resize image before loading to canvas
+    function compressAndLoadImage(file, callback) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imgObj = new Image();
+        imgObj.onload = () => {
+          // Create offscreen canvas
+          const cvs = document.createElement('canvas');
+          const ctx = cvs.getContext('2d');
+          
+          // Max dimension 1280px is usually safe and < 500KB with JPEG compression
+          const MAX_SIZE = 1280; 
+          let w = imgObj.width;
+          let h = imgObj.height;
+          
+          if (w > MAX_SIZE || h > MAX_SIZE) {
+            if (w > h) {
+              h *= MAX_SIZE / w;
+              w = MAX_SIZE;
+            } else {
+              w *= MAX_SIZE / h;
+              h = MAX_SIZE;
+            }
+          }
+          
+          cvs.width = w;
+          cvs.height = h;
+          ctx.drawImage(imgObj, 0, 0, w, h);
+          
+          // Export as JPEG 0.7 quality to reduce size
+          const dataURL = cvs.toDataURL('image/jpeg', 0.7);
+          callback(dataURL);
+        };
+        imgObj.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
     imageInput.addEventListener('change', (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        fabric.Image.fromURL(reader.result, (img) => {
+      
+      document.body.style.cursor = 'wait';
+
+      compressAndLoadImage(file, (dataURL) => {
+        fabric.Image.fromURL(dataURL, (img) => {
+          document.body.style.cursor = 'default';
+
           // Use viewport center so it appears where the user is looking (important if zoomed)
           const center = canvas.getVpCenter();
 
@@ -445,8 +488,8 @@
             canvas.requestRenderAll();
           }, 1000);
         });
-      };
-      reader.readAsDataURL(file);
+      });
+
       // reset input to allow same file re-insert
       imageInput.value = '';
     });
