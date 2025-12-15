@@ -22,6 +22,7 @@
     header { display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); background: #0b1220; position: sticky; top: 0; z-index: 10; }
     header h1 { margin: 0; font-size: 18px; letter-spacing: 0.3px; }
     .toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .toolbar-group { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
     .toolbar select, .toolbar input[type="number"], .toolbar input[type="text"], .toolbar button, .toolbar label {
       background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 14px;
     }
@@ -47,76 +48,70 @@
 <body>
   <header>
     <div class="toolbar">
-      <!-- Backgrounds dropdown -->
-      <label>
-        Item:
-        <select id="bgSelect">
-          <option value="">None</option>
-          <option value="w_pen.png">Wooden Pen</option>
-          <option value="cuttlery.png">Cuttlery</option>
-          <option value="tumbler.png">Tumbler</option>
-          <option value="mug.png">Mug</option>
-          <option value="notebook.png">Notebook</option>
-          <option value="kc_round.png">Keychain-Round</option>
-          <option value="kc_rect.png">Keychain-Rectangle</option>
+      <!-- Level 1: Always Visible -->
+      <div id="toolbar-main" class="toolbar-group">
+        <label>
+          Item:
+          <select id="bgSelect">
+            <option value="">None</option>
+            <option value="w_pen.png">Wooden Pen</option>
+            <option value="cuttlery.png">Cuttlery</option>
+            <option value="tumbler.png">Tumbler</option>
+            <option value="mug.png">Mug</option>
+            <option value="notebook.png">Notebook</option>
+            <option value="kc_round.png">Keychain-Round</option>
+            <option value="kc_rect.png">Keychain-Rectangle</option>
+          </select>
+        </label>
+
+        <button id="addTextBtn">Add Text</button>
+
+        <input id="imageInput" type="file" accept="image/*" style="display:none" />
+        <button id="insertImageBtn">Insert Image</button>
+
+        <button id="deleteBtn" title="Delete Selected">Delete</button>
+        <button id="bringForwardBtn" title="Bring Forward">↑</button>
+        <button id="sendBackwardsBtn" title="Send Backward">↓</button>
+
+        <button id="exportBtn" class="primary">PNG</button>
+        <button id="exportSvgBtn">SVG</button>
+        <button id="emailBtn">Email</button>
+      </div>
+
+      <!-- Level 2: Text Selected -->
+      <div id="toolbar-text" class="toolbar-group" style="display:none; border-left: 1px solid var(--border); padding-left: 8px;">
+        <select id="fontFamily">
+          <option value="Roboto">Roboto</option>
+          <option value="Open Sans">Open Sans</option>
+          <option value="Lato">Lato</option>
+          <option value="Montserrat">Montserrat</option>
+          <option value="Oswald">Oswald</option>
+          <option value="Merriweather">Merriweather</option>
+          <option value="Playfair Display">Playfair Display</option>
+          <option value="Dancing Script">Dancing Script</option>
+          <option value="Pacifico">Pacifico</option>
+          <option value="Poppins">Poppins</option>
+          <option value="Raleway">Raleway</option>
+          <option value="Noto Sans">Noto Sans</option>
+          <option value="Source Sans Pro">Source Sans Pro</option>
+          <option value="Ubuntu">Ubuntu</option>
+          <option value="Roboto Mono">Roboto Mono</option>
+          <option value="Arial">Arial</option>
         </select>
-      </label>
+        <button id="loadFontsBtn" title="Load local system fonts">Local</button>
+        
+        <input id="googleFontInput" type="text" placeholder="Google Font" style="width: 100px;" />
+        <button id="loadGoogleFontBtn">Get</button>
+        
+        <input id="fontSize" type="number" min="8" max="200" step="1" value="32" style="width: 60px;" />
+        <button id="boldBtn"><strong>B</strong></button>
+        <button id="italicBtn"><em>I</em></button>
+      </div>
 
-      <span class="sep"></span>
-
-      <!-- Text controls -->
-      <button id="addTextBtn">Add Text</button>
-      <select id="fontFamily">
-        <option value="Roboto">Roboto</option>
-        <option value="Open Sans">Open Sans</option>
-        <option value="Lato">Lato</option>
-        <option value="Montserrat">Montserrat</option>
-        <option value="Oswald">Oswald</option>
-        <option value="Merriweather">Merriweather</option>
-        <option value="Playfair Display">Playfair Display</option>
-        <option value="Dancing Script">Dancing Script</option>
-        <option value="Pacifico">Pacifico</option>
-        <option value="Poppins">Poppins</option>
-        <option value="Raleway">Raleway</option>
-        <option value="Noto Sans">Noto Sans</option>
-        <option value="Source Sans Pro">Source Sans Pro</option>
-        <option value="Ubuntu">Ubuntu</option>
-        <option value="Roboto Mono">Roboto Mono</option>
-        <option value="Arial">Arial</option>
-      </select>
-      <button id="loadFontsBtn" title="Load local system fonts">Load Local</button>
-      
-      <!-- Google Font Loader -->
-      <input id="googleFontInput" type="text" placeholder="Google Font Name" style="width: 120px;" title="Type a Google Font name (e.g. 'Lobster')" />
-      <button id="loadGoogleFontBtn" title="Fetch from Google Fonts">Get</button>
-
-      <!-- URL Loader (Hidden by default to save space, can be uncommented if needed) -->
-      <!-- <input id="fontUrl" ... > -->
-      
-      <input id="fontSize" type="number" min="8" max="200" step="1" value="32" />
-      <button id="boldBtn"><strong>B</strong></button>
-      <button id="italicBtn"><em>I</em></button>
-
-      <span class="sep"></span>
-
-      <!-- Insert image -->
-      <input id="imageInput" type="file" accept="image/*" style="display:none" />
-      <button id="insertImageBtn">Insert Image</button>
-      <button id="invertBtn" title="Invert Colors">Invert</button>
-
-      <span class="sep"></span>
-
-      <!-- Delete selected -->
-      <button id="deleteBtn">Delete Selected</button>
-      <button id="bringForwardBtn" title="Bring Forward">↑</button>
-      <button id="sendBackwardsBtn" title="Send Backward">↓</button>
-
-      <span class="sep"></span>
-
-      <!-- Export & Email -->
-      <button id="exportBtn" class="primary">Export PNG</button>
-      <button id="exportSvgBtn">Export SVG</button>
-      <button id="emailBtn">Email Export</button>
+      <!-- Level 3: Image Selected -->
+      <div id="toolbar-image" class="toolbar-group" style="display:none; border-left: 1px solid var(--border); padding-left: 8px;">
+        <button id="invertBtn" title="Invert Colors">Invert</button>
+      </div>
     </div>
   </header>
 
@@ -690,16 +685,31 @@
     });
 
     // Keep toolbar reflecting selected text object
-    canvas.on('selection:created', syncUIFromSelection);
-    canvas.on('selection:updated', syncUIFromSelection);
-    function syncUIFromSelection() {
+    canvas.on('selection:created', updateToolbar);
+    canvas.on('selection:updated', updateToolbar);
+    canvas.on('selection:cleared', updateToolbar);
+
+    function updateToolbar() {
       const obj = canvas.getActiveObject();
-      if (obj && obj instanceof fabric.IText) {
-        fontFamily.value = obj.fontFamily || fontFamily.value;
-        fontSize.value = obj.fontSize || fontSize.value;
-        boldOn = (obj.fontWeight === 'bold');
-        italicOn = (obj.fontStyle === 'italic');
-        updateToggleStyles();
+      const textToolbar = document.getElementById('toolbar-text');
+      const imageToolbar = document.getElementById('toolbar-image');
+      
+      // Reset visibility
+      textToolbar.style.display = 'none';
+      imageToolbar.style.display = 'none';
+
+      if (obj) {
+        if (obj instanceof fabric.IText || obj.type === 'text' || obj.type === 'i-text') {
+            textToolbar.style.display = 'flex';
+            // Sync values
+            fontFamily.value = obj.fontFamily || fontFamily.value;
+            fontSize.value = obj.fontSize || fontSize.value;
+            boldOn = (obj.fontWeight === 'bold');
+            italicOn = (obj.fontStyle === 'italic');
+            updateToggleStyles();
+        } else if (obj instanceof fabric.Image || obj.type === 'image') {
+            imageToolbar.style.display = 'flex';
+        }
       }
     }
 
