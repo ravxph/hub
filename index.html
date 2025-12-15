@@ -362,13 +362,12 @@
           fill: '#000000',
         });
 
-        // Clear default text on first edit (double-tap)
+        // Select all text on first edit so typing replaces it
         text.isFirstEdit = true;
         text.on('editing:entered', () => {
             if (text.isFirstEdit) {
-                text.text = '';
+                text.selectAll();
                 text.isFirstEdit = false;
-                canvas.requestRenderAll();
             }
         });
 
