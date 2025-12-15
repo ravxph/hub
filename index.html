@@ -166,6 +166,18 @@
         e.target.angle = Math.round(e.target.angle / 15) * 15;
       });
 
+      // Dynamic Rotation Stem: Set length to 1/2 the longer side of the object
+      function adjustRotationStem(e) {
+          const obj = e.target;
+          if (!obj) return;
+          const dim = Math.max(obj.getScaledWidth(), obj.getScaledHeight());
+          // Set stem to 1/2 longer side, but keep a minimum of 60px for touch usability
+          obj.set('rotatingPointOffset', Math.max(60, dim / 2)); 
+      }
+      canvas.on('selection:created', adjustRotationStem);
+      canvas.on('selection:updated', adjustRotationStem);
+      canvas.on('object:scaling', adjustRotationStem);
+
       // Panning Logic (Mouse/Touch Drag on background)
       let isDragging = false;
       let lastPosX;
