@@ -412,45 +412,96 @@
         canvas.renderAll();
       });
 
-    // Load System Fonts
+    // Load System Fonts (Desktop) or Scan Common Fonts (Mobile)
     const loadFontsBtn = document.getElementById('loadFontsBtn');
     loadFontsBtn.addEventListener('click', async () => {
-      if (!('queryLocalFonts' in window)) {
-        alert('Your browser does not support the Local Font Access API. Try using Chrome or Edge on a secure connection (localhost or https).');
-        return;
-      }
-      try {
-        // Request permission and get fonts
-        const fonts = await window.queryLocalFonts();
-        
-        // Extract unique families
-        const families = new Set(fonts.map(f => f.family));
-        const sorted = [...families].sort();
-        
-        // Save current selection
-        const currentVal = fontFamily.value;
-        
-        // Clear and repopulate
-        fontFamily.innerHTML = '';
-        sorted.forEach(fam => {
-          const opt = document.createElement('option');
-          opt.value = fam;
-          opt.textContent = fam;
-          fontFamily.appendChild(opt);
-        });
-        
-        // Restore selection if possible
-        if (families.has(currentVal)) {
-          fontFamily.value = currentVal;
-        } else if (sorted.length > 0) {
-          fontFamily.value = sorted[0];
+      // 1. Try Local Font Access API (Desktop Chrome/Edge)
+      if ('queryLocalFonts' in window) {
+        try {
+          const fonts = await window.queryLocalFonts();
+          const families = new Set(fonts.map(f => f.family));
+          const sorted = [...families].sort();
+          
+          const currentVal = fontFamily.value;
+          fontFamily.innerHTML = '';
+          sorted.forEach(fam => {
+            const opt = document.createElement('option');
+            opt.value = fam;
+            opt.textContent = fam;
+            fontFamily.appendChild(opt);
+          });
+          
+          if (families.has(currentVal)) fontFamily.value = currentVal;
+          else if (sorted.length > 0) fontFamily.value = sorted[0];
+          
+          alert(`Successfully loaded ${sorted.length} fonts from your system!`);
+          return;
+        } catch (err) {
+          console.warn('Local Font Access API failed or denied.', err);
         }
-        
-        alert(`Successfully loaded ${sorted.length} fonts from your system!`);
-      } catch (err) {
-        console.error(err);
-        alert('Could not load fonts: ' + err.message);
       }
+
+      // 2. Fallback: Scan for common fonts using width comparison
+      // Since mobile browsers don't expose a list, we check against a known list of popular fonts.
+      const fontsToCheck = [
+        // Windows / Standard Web
+        'Arial', 'Arial Black', 'Bahnschrift', 'Calibri', 'Cambria', 'Comic Sans MS', 'Consolas', 
+        'Courier New', 'Franklin Gothic Medium', 'Gabriola', 'Georgia', 'Impact', 'Ink Free', 
+        'Lucida Console', 'Microsoft Sans Serif', 'Palatino Linotype', 'Segoe Print', 'Segoe Script', 
+        'Segoe UI', 'Sylfaen', 'Tahoma', 'Times New Roman', 'Trebuchet MS', 'Verdana', 
+        // macOS / iOS
+        'American Typewriter', 'Apple Chancery', 'Arial Narrow', 'Baskerville', 'Big Caslon', 
+        'Bodoni 72', 'Book Antiqua', 'Chalkduster', 'Cochin', 'Copperplate', 'Courier', 'Didot', 
+        'Futura', 'Geneva', 'Gill Sans', 'Helvetica', 'Helvetica Neue', 'Herculanum', 'Hoefler Text', 
+        'Lucida Grande', 'Marker Felt', 'Menlo', 'Monaco', 'Noteworthy', 'Optima', 'Palatino', 
+        'Papyrus', 'Phosphate', 'Rockwell', 'SignPainter', 'Snell Roundhand', 'Times', 'Zapfino',
+        // Android / Linux / Common
+        'Roboto', 'Noto Sans', 'Droid Sans', 'Droid Serif', 'Droid Sans Mono', 'Liberation Sans', 
+        'Ubuntu', 'Cantarell', 'Oxygen', 'Fira Sans', 'Source Sans Pro', 'Open Sans'
+      ];
+
+      // Helper to detect if a font is installed by comparing widths against fallbacks
+      const isFontAvailable = (font) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const text = "abcdefghijklmnopqrstuvwxyz0123456789";
+        const baseFonts = ['monospace', 'sans-serif', 'serif'];
+        
+        for (const base of baseFonts) {
+            ctx.font = `72px ${base}`;
+            const baseWidth = ctx.measureText(text).width;
+            
+            ctx.font = `72px "${font}", ${base}`;
+            const newWidth = ctx.measureText(text).width;
+            
+            // If width differs from fallback, the font is likely present
+            if (newWidth !== baseWidth) return true;
+        }
+        return false;
+      };
+
+      document.body.style.cursor = 'wait';
+      
+      // Run in timeout to allow UI update
+      setTimeout(() => {
+          const available = fontsToCheck.filter(f => isFontAvailable(f));
+          const sorted = available.sort();
+          
+          // Merge with existing options to avoid duplicates
+          const existing = new Set(Array.from(fontFamily.options).map(o => o.value));
+          
+          sorted.forEach(fam => {
+              if (!existing.has(fam)) {
+                  const opt = document.createElement('option');
+                  opt.value = fam;
+                  opt.textContent = fam;
+                  fontFamily.appendChild(opt);
+              }
+          });
+          
+          document.body.style.cursor = 'default';
+          alert(`Scanned and found ${available.length} fonts on this device.`);
+      }, 100);
     });
 
     // Load Google Font by Name
