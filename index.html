@@ -73,6 +73,9 @@
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
         </button>
 
+        <button id="duplicateBtn" title="Duplicate Selected">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </button>
         <button id="deleteBtn" title="Delete Selected">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
         </button>
@@ -81,6 +84,9 @@
         </button>
         <button id="sendBackwardsBtn" title="Send Backward">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16 13h-3V3h-2v10H8l4 4 4-4zM4 19v2h16v-2H4z"/></svg>
+        </button>
+        <button id="invertBtn" title="Invert Colors">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6.34 7.93c-3.12 3.12-3.12 8.19 0 11.31s8.19 3.12 11.31 0c3.12-3.12 3.12-8.19 0-11.31-3.12-3.12-8.19-3.12-11.31 0zM12 17.17V6.83c2.86.29 5.13 2.56 5.42 5.42-.29 2.86-2.56 5.13-5.42 5.42z"/></svg>
         </button>
 
         <button id="exportBtn" class="primary">PNG</button>
@@ -117,6 +123,14 @@
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg>
         </button>
         
+        <label title="Text Border Width">
+          Border: <input id="textBorder" type="number" min="0" max="20" step="0.5" value="0" style="width: 50px;" />
+        </label>
+        
+        <label title="Character Spacing">
+          Spacing: <input id="charSpacing" type="range" min="-200" max="800" value="0" step="10" style="width: 80px;" />
+        </label>
+
         <div class="sep"></div>
         <button id="alignLeftBtn" title="Align Left">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 21h18v-2H3v2zm0-4h12v-2H3v2zm0-4h18v-2H3v2zm0-4h12V7H3v2zm0-6v2h18V3H3z"/></svg>
@@ -127,14 +141,18 @@
         <button id="alignRightBtn" title="Align Right">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 21h18v-2H3v2zm6-4h12v-2H9v2zm-6-4h18v-2H3v2zm6-4h12V7H9v2zm-6-6v2h18V3H3z"/></svg>
         </button>
+        
+        <div class="sep"></div>
+        <button id="circularTextBtn" title="Toggle Circular Text">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><circle cx="12" cy="12" r="5"/></svg>
+        </button>
+        <label style="display:none;" id="flipCurveLabel">
+          <input id="flipCurve" type="checkbox" /> Flip
+        </label>
       </div>
 
-      <!-- Level 3: Image Selected -->
-      <div id="toolbar-image" class="toolbar-group" style="display:none; border-left: 1px solid var(--border); padding-left: 8px;">
-        <button id="invertBtn" title="Invert Colors">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6.34 7.93c-3.12 3.12-3.12 8.19 0 11.31s8.19 3.12 11.31 0c3.12-3.12 3.12-8.19 0-11.31-3.12-3.12-8.19-3.12-11.31 0zM12 17.17V6.83c2.86.29 5.13 2.56 5.42 5.42-.29 2.86-2.56 5.13-5.42 5.42z"/></svg>
-        </button>
-      </div>
+      <!-- Level 3: Image Selected - Removed as Invert is now main -->
+      <!-- <div id="toolbar-image" ...></div> -->
     </div>
   </header>
 
@@ -423,6 +441,9 @@
           fontFamily: 'Arial',
           fontSize: 32,
           fill: '#000000',
+          stroke: '#ffffff',
+          strokeWidth: 0,
+          paintFirst: 'stroke' // Renders stroke behind fill (simulating back/front layers)
         });
 
         // Select all text on first edit so typing replaces it
@@ -577,13 +598,27 @@
     // Font family & size controls apply to active text
     const fontFamily = document.getElementById('fontFamily');
     const fontSize = document.getElementById('fontSize');
+    const textBorder = document.getElementById('textBorder');
+    const charSpacing = document.getElementById('charSpacing');
+
+    function getInvertedColor(color) {
+        if (color === '#000000' || color === 'black' || color === '#000') return '#ffffff';
+        return '#000000';
+    }
+
     function applyTextStyles() {
       const obj = canvas.getActiveObject();
-      if (!obj || !(obj instanceof fabric.IText)) return;
+      if (!obj || !(obj instanceof fabric.IText || obj instanceof fabric.CurvedText)) return;
+      
+      const borderW = parseFloat(textBorder.value) || 0;
+      const currentFill = obj.fill || '#000000';
+      
       obj.set({
         fontFamily: fontFamily.value,
         fontSize: parseInt(fontSize.value, 10) || obj.fontSize,
-        fill: '#000000', // enforce black text color
+        charSpacing: parseInt(charSpacing.value, 10) || 0,
+        strokeWidth: borderW,
+        stroke: borderW > 0 ? getInvertedColor(currentFill) : null
       });
       obj.set('fontWeight', boldOn ? 'bold' : 'normal');
       obj.set('fontStyle', italicOn ? 'italic' : 'normal');
@@ -591,6 +626,8 @@
     }
     fontFamily.addEventListener('change', applyTextStyles);
     fontSize.addEventListener('change', applyTextStyles);
+    textBorder.addEventListener('input', applyTextStyles);
+    charSpacing.addEventListener('input', applyTextStyles);
 
     // Bold & Italic toggles
     let boldOn = false;
@@ -621,7 +658,7 @@
 
     function setTextAlign(align) {
       const obj = canvas.getActiveObject();
-      if (!obj || !(obj instanceof fabric.IText)) return;
+      if (!obj || !(obj instanceof fabric.IText || obj instanceof fabric.CurvedText)) return;
       obj.set('textAlign', align);
       canvas.requestRenderAll();
       updateAlignmentUI(align);
@@ -630,6 +667,318 @@
     alignLeftBtn.addEventListener('click', () => setTextAlign('left'));
     alignCenterBtn.addEventListener('click', () => setTextAlign('center'));
     alignRightBtn.addEventListener('click', () => setTextAlign('right'));
+
+    // Circular Text Feature
+    const circularTextBtn = document.getElementById('circularTextBtn');
+    // const curveRadius = document.getElementById('curveRadius'); // Removed
+    // const curveRadiusLabel = document.getElementById('curveRadiusLabel'); // Removed
+    const flipCurve = document.getElementById('flipCurve');
+    const flipCurveLabel = document.getElementById('flipCurveLabel');
+    // const radiusValue = document.getElementById('radiusValue'); // Removed
+
+    // Custom fabric.js text class that renders text on a curve
+    fabric.CurvedText = fabric.util.createClass(fabric.IText, {
+      type: 'curved-text',
+      
+      radius: 200,
+      flipped: false,
+      
+      initialize: function(text, options) {
+        options = options || {};
+        this.radius = options.radius || 200;
+        this.flipped = options.flipped || false;
+        this.callSuper('initialize', text, options);
+        this.set('lockScalingFlip', true);
+        this._updateDimensions();
+
+        // Add custom control for radius
+        this.controls = fabric.util.object.clone(fabric.Object.prototype.controls);
+        
+        this.controls.radius = new fabric.Control({
+            x: 0.5,
+            y: 0,
+            offsetX: 0,
+            cursorStyle: 'ew-resize',
+            actionHandler: function(eventData, transform, x, y) {
+                var target = transform.target;
+                var localPoint = target.toLocalPoint(new fabric.Point(x, y), 'center', 'center');
+                var newRadius = Math.abs(localPoint.x);
+                // Limit min/max
+                newRadius = Math.max(50, Math.min(500, newRadius));
+                
+                target.set('radius', newRadius);
+                return true; // render
+            },
+            actionName: 'resizing-radius',
+            render: function(ctx, left, top, styleOverride, fabricObject) {
+                // Custom rendering for the handle
+                ctx.save();
+                ctx.translate(left, top);
+                ctx.beginPath();
+                ctx.arc(0, 0, 12, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#22c55e';
+                ctx.stroke();
+                // Draw "R"
+                ctx.fillStyle = '#22c55e';
+                ctx.font = 'bold 10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('R', 0, 1);
+                ctx.restore();
+            }
+        });
+      },
+      
+      _updateDimensions: function() {
+        // Calculate dimensions to fit the curved text
+        if (this.radius) {
+          const diameter = this.radius * 2 + this.fontSize * 2;
+          this.width = diameter;
+          this.height = diameter;
+        }
+      },
+      
+      set: function(key, value) {
+        this.callSuper('set', key, value);
+        
+        const keys = typeof key === 'object' ? Object.keys(key) : [key];
+        if (keys.some(k => ['radius', 'fontSize', 'text', 'fontFamily', 'fontWeight', 'fontStyle', 'flipped', 'charSpacing'].includes(k))) {
+          this._updateDimensions();
+          this.dirty = true;
+        }
+        return this;
+      },
+      
+      _renderText: function(ctx) {
+        if (!this.radius) {
+          this.callSuper('_renderText', ctx);
+          return;
+        }
+        
+        const text = this.text;
+        const radius = this.radius;
+        const flipped = this.flipped;
+        const charSpacing = this.charSpacing || 0;
+        
+        // Set text properties
+        ctx.font = this._getFontDeclaration();
+        ctx.textBaseline = 'alphabetic';
+        
+        // Calculate total text width including spacing
+        // Fabric charSpacing is in thousands of em
+        const spacing = (charSpacing / 1000) * this.fontSize;
+        
+        let textWidth = 0;
+        for (let i = 0; i < text.length; i++) {
+            textWidth += ctx.measureText(text[i]).width;
+            if (i < text.length - 1) textWidth += spacing;
+        }
+        
+        const totalAngle = textWidth / radius;
+        let currentAngle = -totalAngle / 2;
+        
+        // Adjust for text alignment
+        if (this.textAlign === 'left') {
+          // currentAngle = 0; // Keep centered for now
+        } else if (this.textAlign === 'right') {
+          // currentAngle = -totalAngle; 
+        }
+        
+        ctx.save();
+        
+        // Center of the curve is the center of the object (0,0)
+        // No initial translation needed
+
+        // Render each character
+        for (let i = 0; i < text.length; i++) {
+          const char = text[i];
+          const charWidth = ctx.measureText(char).width;
+          const charAngle = currentAngle + (charWidth / 2) / radius;
+          
+          ctx.save();
+          
+          // If flipped (Smile), we need to rotate in the opposite direction to maintain Left-to-Right reading order
+          ctx.rotate(flipped ? -charAngle : charAngle);
+          
+          if (flipped) {
+            // Smile: Move down to the arc
+            ctx.translate(0, radius);
+          } else {
+            // Rainbow: Move up to the arc
+            ctx.translate(0, -radius);
+          }
+          
+          // Draw the character
+          if (this.paintFirst === 'stroke') {
+            if (this.stroke && this.strokeWidth > 0) {
+              ctx.strokeStyle = this.stroke;
+              ctx.lineWidth = this.strokeWidth;
+              ctx.strokeText(char, -charWidth / 2, 0);
+            }
+            if (this.fill) {
+              ctx.fillStyle = this.fill;
+              ctx.fillText(char, -charWidth / 2, 0);
+            }
+          } else {
+            if (this.fill) {
+              ctx.fillStyle = this.fill;
+              ctx.fillText(char, -charWidth / 2, 0);
+            }
+            if (this.stroke && this.strokeWidth > 0) {
+              ctx.strokeStyle = this.stroke;
+              ctx.lineWidth = this.strokeWidth;
+              ctx.strokeText(char, -charWidth / 2, 0);
+            }
+          }
+          
+          ctx.restore();
+          
+          currentAngle += (charWidth + spacing) / radius;
+        }
+        
+        ctx.restore();
+      },
+      
+      // Hide cursor and selection to prevent visual artifacts while editing curved text
+      renderCursor: function(ctx, boundaries) {
+        // No-op
+      },
+      renderSelection: function(ctx, boundaries) {
+        // No-op
+      },
+
+      _renderTextDecoration: function(ctx) {
+        // Skip text decoration for curved text
+      },
+      
+      _renderTextLinesBackground: function(ctx) {
+        // Skip background for curved text
+      },
+      
+      getBoundingRect: function() {
+        // Return a bounding rect that accounts for the curve
+        if (this.radius) {
+          const diameter = this.radius * 2 + this.fontSize * 2;
+          const coords = this.calcCoords();
+          return {
+            left: coords.tl.x,
+            top: coords.tl.y,
+            width: diameter * this.scaleX,
+            height: diameter * this.scaleY
+          };
+        }
+        return this.callSuper('getBoundingRect');
+      },
+      
+      toObject: function() {
+        return fabric.util.object.extend(this.callSuper('toObject'), {
+          radius: this.radius,
+          flipped: this.flipped
+        });
+      }
+    });
+
+    fabric.CurvedText.fromObject = function(object, callback) {
+      return fabric.Object._fromObject('CurvedText', object, callback, 'text');
+    };
+
+    function toggleCircularText() {
+      const obj = canvas.getActiveObject();
+      if (!obj || !(obj instanceof fabric.IText || obj instanceof fabric.CurvedText)) return;
+      
+      if (obj instanceof fabric.CurvedText) {
+        // Convert back to regular text
+        const newText = new fabric.IText(obj.text, {
+          left: obj.left,
+          top: obj.top,
+          fontSize: obj.fontSize,
+          fontFamily: obj.fontFamily,
+          fontWeight: obj.fontWeight,
+          fontStyle: obj.fontStyle,
+          fill: obj.fill,
+          stroke: obj.stroke,
+          strokeWidth: obj.strokeWidth,
+          charSpacing: obj.charSpacing,
+          paintFirst: obj.paintFirst,
+          textAlign: obj.textAlign,
+          originX: obj.originX,
+          originY: obj.originY,
+          angle: obj.angle,
+          scaleX: obj.scaleX,
+          scaleY: obj.scaleY
+        });
+        
+        canvas.remove(obj);
+        canvas.add(newText);
+        canvas.setActiveObject(newText);
+      } else {
+        // Convert to curved text
+        const radius = 200; // Default radius
+        const flipped = flipCurve.checked;
+        
+        const curvedText = new fabric.CurvedText(obj.text, {
+          left: obj.left,
+          top: obj.top,
+          fontSize: obj.fontSize,
+          fontFamily: obj.fontFamily,
+          fontWeight: obj.fontWeight,
+          fontStyle: obj.fontStyle,
+          fill: obj.fill,
+          stroke: obj.stroke,
+          strokeWidth: obj.strokeWidth,
+          charSpacing: obj.charSpacing,
+          paintFirst: obj.paintFirst,
+          textAlign: obj.textAlign,
+          radius: radius,
+          flipped: flipped,
+          originX: obj.originX,
+          originY: obj.originY,
+          angle: obj.angle,
+          scaleX: obj.scaleX,
+          scaleY: obj.scaleY
+        });
+        
+        canvas.remove(obj);
+        canvas.add(curvedText);
+        canvas.setActiveObject(curvedText);
+      }
+      
+      canvas.requestRenderAll();
+      updateCircularTextUI();
+    }
+
+    function updateCurveParams() {
+      const obj = canvas.getActiveObject();
+      if (!obj || !(obj instanceof fabric.CurvedText)) return;
+      
+      obj.set({
+        flipped: flipCurve.checked
+      });
+      
+      obj.dirty = true;
+      obj._updateDimensions();
+      obj.setCoords();
+      
+      canvas.requestRenderAll();
+    }
+
+    function updateCircularTextUI() {
+      const obj = canvas.getActiveObject();
+      const isCircular = obj && obj instanceof fabric.CurvedText;
+      
+      circularTextBtn.style.outline = isCircular ? '2px solid var(--accent)' : 'none';
+      flipCurveLabel.style.display = isCircular ? 'inline-flex' : 'none';
+      
+      if (isCircular) {
+        flipCurve.checked = obj.flipped || false;
+      }
+    }
+
+    circularTextBtn.addEventListener('click', toggleCircularText);
+    flipCurve.addEventListener('change', updateCurveParams);
 
     // Insert image
     const imageInput = document.getElementById('imageInput');
@@ -741,17 +1090,55 @@
           obj.filters.push(new fabric.Image.filters.Invert());
         }
         obj.applyFilters();
-      } else if (obj.type === 'i-text' || obj.type === 'text') {
+      } else if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'curved-text') {
         // Simple color inversion for text (Black <-> White)
         const currentFill = obj.fill;
+        let newFill;
+        
         // Check for black-ish colors
         if (currentFill === '#000000' || currentFill === 'black' || currentFill === '#000') {
-            obj.set('fill', '#ffffff');
+            newFill = '#ffffff';
         } else {
-            obj.set('fill', '#000000');
+            newFill = '#000000';
+        }
+        
+        obj.set('fill', newFill);
+        
+        // Also invert stroke if present
+        if (obj.strokeWidth > 0) {
+            obj.set('stroke', getInvertedColor(newFill));
         }
       }
       canvas.requestRenderAll();
+    });
+
+    // Duplicate selected
+    document.getElementById('duplicateBtn').addEventListener('click', () => {
+      const obj = canvas.getActiveObject();
+      if (!obj) return;
+      
+      obj.clone((cloned) => {
+        canvas.discardActiveObject();
+        cloned.set({
+          left: obj.left,
+          top: obj.top,
+          evented: true,
+        });
+        
+        if (cloned.type === 'activeSelection') {
+          // active selection needs a reference to the canvas.
+          cloned.canvas = canvas;
+          cloned.forEachObject((obj) => {
+            canvas.add(obj);
+          });
+          cloned.setCoords();
+        } else {
+          canvas.add(cloned);
+        }
+        
+        canvas.setActiveObject(cloned);
+        canvas.requestRenderAll();
+      });
     });
 
     // Delete selected
@@ -835,25 +1222,29 @@
     function updateToolbar() {
       const obj = canvas.getActiveObject();
       const textToolbar = document.getElementById('toolbar-text');
-      const imageToolbar = document.getElementById('toolbar-image');
+      // const imageToolbar = document.getElementById('toolbar-image'); // Removed
       
       // Reset visibility
       textToolbar.style.display = 'none';
-      imageToolbar.style.display = 'none';
+      // imageToolbar.style.display = 'none';
 
       if (obj) {
-        if (obj instanceof fabric.IText || obj.type === 'text' || obj.type === 'i-text') {
+        if (obj instanceof fabric.IText || obj instanceof fabric.CurvedText || obj.type === 'text' || obj.type === 'i-text' || obj.type === 'curved-text') {
             textToolbar.style.display = 'flex';
             // Sync values
             fontFamily.value = obj.fontFamily || fontFamily.value;
             fontSize.value = obj.fontSize || fontSize.value;
+            textBorder.value = obj.strokeWidth || 0;
+            charSpacing.value = obj.charSpacing || 0;
             boldOn = (obj.fontWeight === 'bold');
             italicOn = (obj.fontStyle === 'italic');
             updateToggleStyles();
             updateAlignmentUI(obj.textAlign || 'left');
-        } else if (obj instanceof fabric.Image || obj.type === 'image') {
-            imageToolbar.style.display = 'flex';
-        }
+            updateCircularTextUI();
+        } 
+        // else if (obj instanceof fabric.Image || obj.type === 'image') {
+        //    imageToolbar.style.display = 'flex';
+        // }
       }
     }
 
