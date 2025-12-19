@@ -708,7 +708,7 @@
           const curH = img.getScaledHeight();
 
           img.set('globalCompositeOperation', 'multiply');
-          // img.filters.push(new fabric.Image.filters.Grayscale());
+           img.filters.push(new fabric.Image.filters.Grayscale());
           img.applyFilters();
 
           // Restore dimensions
