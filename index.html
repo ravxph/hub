@@ -1,4 +1,4 @@
-<! doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -7,10 +7,10 @@
   <!-- Google Fonts (Top 15 Popular) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Lato&family=Merriweather&family=Montserrat&family=Noto+Sans&family=Open+Sans&family=Oswald&family=Pacifico&family=Playfair+Display&family=Poppins&family=Raleway&family=Roboto&family=Roboto+Condensed&family=Roboto+Slab&family=Ubuntu&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Lato&family=Merriweather&family=Montserrat&family=Noto+Sans&family=Open+Sans&family=Oswald&family=Pacifico&family=Playfair+Display&family=Poppins&family=Raleway&family=Roboto&family=Roboto+Mono&family=Source+Sans+Pro&family=Ubuntu&display=swap" rel="stylesheet">
   <style>
-    : root {
-      --bg:  #0f172a;
+    :root {
+      --bg: #0f172a;
       --panel: #111827;
       --accent: #22c55e;
       --text: #e5e7eb;
@@ -18,29 +18,29 @@
       --border: #334155;
     }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family:  system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background:  var(--bg); color: var(--text); }
-    header { display: flex; align-items: center; justify-content:space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); background: #0b1220; position: sticky; top: 0; z-index: 10; }
-    header h1 { margin: 0; font-size:  18px; letter-spacing: 0.3px; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text); }
+    header { display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); background: #0b1220; position: sticky; top: 0; z-index: 10; }
+    header h1 { margin: 0; font-size: 18px; letter-spacing: 0.3px; }
     .toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
     .toolbar-group { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
     .toolbar select, .toolbar input[type="number"], .toolbar input[type="text"], .toolbar button, .toolbar label {
       background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 14px;
     }
     .toolbar button { cursor: pointer; }
-    .toolbar button. primary { background: var(--accent); color: #052814; border:  none; font-weight: 600; }
+    .toolbar button.primary { background: var(--accent); color: #052814; border: none; font-weight: 600; }
     .toolbar button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .toolbar . sep { width: 1px; height:28px; background: var(--border); margin: 0 4px; }
+    .toolbar .sep { width:1px; height:28px; background: var(--border); margin: 0 4px; }
 
-    main { display:grid; grid-template-columns: 1fr; gap:  12px; padding: 12px; }
+    main { display:grid; grid-template-columns: 1fr; gap: 12px; padding: 12px; }
     .controls { display:flex; flex-direction:column; gap:8px; }
 
-  . canvas-wrap { background: #f0f0f0; border: 1px solid var(--border); border-radius: 10px; display:flex; align-items:center; justify-content:center; min-height:  70vh; position:  relative; overflow: auto; }
-  /* Fix:  Do not set background on 'canvas' tag directly, as Fabric.js creates an upper canvas overlay that must remain transparent.  */
+  .canvas-wrap { background: #f0f0f0; border:1px solid var(--border); border-radius: 10px; display:flex; align-items:center; justify-content:center; min-height: 70vh; position: relative; overflow:auto; }
+  /* Fix: Do not set background on 'canvas' tag directly, as Fabric.js creates an upper canvas overlay that must remain transparent. */
   .canvas-container { background: #ffffff; box-shadow: 0 0 0 1px var(--border) inset; }
 
     footer { padding: 12px 16px; border-top: 1px solid var(--border); color: var(--muted); }
     .hint { color: var(--muted); font-size: 12px; }
-    a. link { color: #93c5fd; text-decoration:  none; }
+    a.link { color: #93c5fd; text-decoration: none; }
   </style>
   <!-- Fabric.js loaded locally for reliability -->
   <script src="https://cdn.jsdelivr.net/npm/fabric@4.6.0/dist/fabric.min.js"></script>
@@ -51,10 +51,10 @@
       <!-- Level 1: Always Visible -->
       <div id="toolbar-main" class="toolbar-group">
         <label>
-          Item: 
+          Item:
           <select id="bgSelect">
             <option value="">None</option>
-            <option value="w_pen. png">Wooden Pen</option>
+            <option value="w_pen.png">Wooden Pen</option>
             <option value="cuttlery.png">Cuttlery</option>
             <option value="tumbler.png">Tumbler</option>
             <option value="mug.png">Mug</option>
@@ -65,12 +65,12 @@
         </label>
 
         <button id="addTextBtn" title="Add Text">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M5 4v3h5. 5v12h3V7H19V4z"/></svg>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
         </button>
 
-        <input id="imageInput" type="file" accept="image/*" style="display: none" />
+        <input id="imageInput" type="file" accept="image/*" style="display:none" />
         <button id="insertImageBtn" title="Insert Image">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8. 5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
         </button>
 
         <button id="deleteBtn" title="Delete Selected">
@@ -111,7 +111,7 @@
         
         <input id="fontSize" type="number" min="8" max="200" step="1" value="32" style="width: 60px;" />
         <button id="boldBtn" title="Bold">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M15. 6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg>
         </button>
         <button id="italicBtn" title="Italic">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg>
@@ -127,30 +127,12 @@
         <button id="alignRightBtn" title="Align Right">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 21h18v-2H3v2zm6-4h12v-2H9v2zm-6-4h18v-2H3v2zm6-4h12V7H9v2zm-6-6v2h18V3H3z"/></svg>
         </button>
-        
-        <div class="sep"></div>
-        <button id="circularTextBtn" title="Circular Text Path">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M8 12h8v1. 5H8z"/></svg>
-        </button>
-      </div>
-
-      <!-- Level 2. 5: Circular Text Controls (shown when circular text is active) -->
-      <div id="toolbar-circular" class="toolbar-group" style="display:none; border-left: 1px solid var(--border); padding-left: 8px;">
-        <label style="display:flex; align-items:center; gap:4px;">
-          Curve:
-          <input id="curveRadius" type="range" min="50" max="500" step="10" value="200" style="width: 120px;" />
-          <span id="curveValue" style="min-width: 45px;">200</span>
-        </label>
-        <label style="display:flex; align-items:center; gap:4px;">
-          <input id="curveDirection" type="checkbox" />
-          Flip
-        </label>
       </div>
 
       <!-- Level 3: Image Selected -->
       <div id="toolbar-image" class="toolbar-group" style="display:none; border-left: 1px solid var(--border); padding-left: 8px;">
         <button id="invertBtn" title="Invert Colors">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6. 34 7. 93c-3.12 3.12-3.12 8.19 0 11.31s8.19 3.12 11.31 0c3.12-3.12 3.12-8.19 0-11.31-3.12-3.12-8.19-3.12-11.31 0zm5.66 11.32c-2.5 0-4.71-1.28-6-3.22.03-3.21 4-4.97 6-4.97s5.97 1.76 6 4.97c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6.34 7.93c-3.12 3.12-3.12 8.19 0 11.31s8.19 3.12 11.31 0c3.12-3.12 3.12-8.19 0-11.31-3.12-3.12-8.19-3.12-11.31 0zM12 17.17V6.83c2.86.29 5.13 2.56 5.42 5.42-.29 2.86-2.56 5.13-5.42 5.42z"/></svg>
         </button>
       </div>
     </div>
@@ -164,13 +146,13 @@
   </main>
 
   <footer>
-    Export downloads a PNG locally.  Email opens your mail client with a prefilled message.  To auto-send emails, you need a small backend; see notes below.
+    Export downloads a PNG locally. Email opens your mail client with a prefilled message. To auto-send emails, you need a small backend; see notes below.
   </footer>
 
   <script>
     // Defer initialization until window load to ensure scripts and DOM are ready
     window.addEventListener('load', () => {
-      // Guard:  ensure Fabric.js loaded
+      // Guard: ensure Fabric.js loaded
       if (typeof fabric === 'undefined') {
         alert('Fabric.js failed to load. Please check your internet connection or use a local server.');
         return;
@@ -190,7 +172,7 @@
       });
 
       // Initialize Fabric canvas
-      const canvas = new fabric. Canvas('c', {
+      const canvas = new fabric.Canvas('c', {
         backgroundColor: '#ffffff',
         preserveObjectStacking: true,
         selection: false, // Disable group selection to allow panning
@@ -207,10 +189,10 @@
         e.target.angle = Math.round(e.target.angle / 15) * 15;
       });
 
-      // Dynamic Rotation Stem:  Set length to 1/2 the longer side of the object
+      // Dynamic Rotation Stem: Set length to 1/2 the longer side of the object
       function adjustRotationStem(e) {
           const obj = e.target;
-          if (! obj) return;
+          if (!obj) return;
           const dim = Math.max(obj.getScaledWidth(), obj.getScaledHeight());
           // Set stem to 1/2 longer side, but keep a minimum of 60px for touch usability
           obj.set('rotatingPointOffset', Math.max(60, dim / 2)); 
@@ -224,7 +206,7 @@
       let lastPosX;
       let lastPosY;
 
-      // Smart Selection Bias:  Track last active object to prevent accidental panning
+      // Smart Selection Bias: Track last active object to prevent accidental panning
       let lastSelected = null;
       canvas.on('selection:created', (e) => lastSelected = e.target);
       canvas.on('selection:updated', (e) => lastSelected = e.target);
@@ -240,19 +222,19 @@
             return;
         }
         
-        // Bias:  If clicking near the previously selected object, re-select it and don't pan
+        // Bias: If clicking near the previously selected object, re-select it and don't pan
         if (lastSelected && canvas.getObjects().includes(lastSelected)) {
             const pointer = canvas.getPointer(evt);
             const bound = lastSelected.getBoundingRect();
             const pad = 60; // 60px buffer around object
             
             if (pointer.x >= bound.left - pad &&
-                pointer.x <= bound. left + bound.width + pad &&
+                pointer.x <= bound.left + bound.width + pad &&
                 pointer.y >= bound.top - pad &&
                 pointer.y <= bound.top + bound.height + pad) {
                 
                 // Restore selection if lost
-                if (! canvas.getActiveObject()) {
+                if (!canvas.getActiveObject()) {
                     canvas.setActiveObject(lastSelected);
                     canvas.requestRenderAll();
                 }
@@ -272,7 +254,7 @@
             lastPosY = touch.clientY;
         } else {
             lastPosX = evt.clientX;
-            lastPosY = evt. clientY;
+            lastPosY = evt.clientY;
         }
         canvas.setCursor('grabbing');
       });
@@ -285,7 +267,7 @@
           if (evt.type === 'touchmove') {
               const touch = evt.touches[0];
               clientX = touch.clientX;
-              clientY = touch. clientY;
+              clientY = touch.clientY;
           } else {
               clientX = evt.clientX;
               clientY = evt.clientY;
@@ -401,15 +383,15 @@
           canvas.setBackgroundImage(img, () => {
               canvas.renderAll();
               resizeCanvas(); // Update CSS display size
-              document.body.style. cursor = 'default';
+              document.body.style.cursor = 'default';
           });
         };
         
-        imgEl. onerror = () => {
-          if (! isRetry && src. startsWith('http')) {
+        imgEl.onerror = () => {
+          if (!isRetry && src.startsWith('http')) {
             // Retry with a CORS proxy
-            console.warn('Direct load failed (CORS? ), retrying with proxy.. .');
-            attemptLoad('https://api.allorigins.win/raw? url=' + encodeURIComponent(url), true);
+            console.warn('Direct load failed (CORS?), retrying with proxy...');
+            attemptLoad('https://api.allorigins.win/raw?url=' + encodeURIComponent(url), true);
           } else {
             document.body.style.cursor = 'default';
             alert('Failed to load background image.\n\nThe server blocked access and the proxy also failed.\n\nWorkaround: Download the image to your computer and use the "Insert Image" button instead.');
@@ -428,7 +410,7 @@
       setBackgroundFromURL(e.target.value);
     });
 
-    // Canvas resize UI removed — canvas size is taken from the <canvas> element or controlled programmatically. 
+    // Canvas resize UI removed — canvas size is taken from the <canvas> element or controlled programmatically.
 
       // Add Text
       const addTextBtn = document.getElementById('addTextBtn');
@@ -464,8 +446,8 @@
       if ('queryLocalFonts' in window) {
         try {
           const fonts = await window.queryLocalFonts();
-          const families = new Set(fonts.map(f => f. family));
-          const sorted = [... families].sort();
+          const families = new Set(fonts.map(f => f.family));
+          const sorted = [...families].sort();
           
           const currentVal = fontFamily.value;
           fontFamily.innerHTML = '';
@@ -479,15 +461,15 @@
           if (families.has(currentVal)) fontFamily.value = currentVal;
           else if (sorted.length > 0) fontFamily.value = sorted[0];
           
-          alert(`Successfully loaded ${sorted.length} fonts from your system! `);
+          alert(`Successfully loaded ${sorted.length} fonts from your system!`);
           return;
         } catch (err) {
-          console.warn('Local Font Access API failed or denied. ', err);
+          console.warn('Local Font Access API failed or denied.', err);
         }
       }
 
-      // 2. Fallback:  Scan for common fonts using width comparison
-      // Since mobile browsers don't expose a list, we check against a known list of popular fonts. 
+      // 2. Fallback: Scan for common fonts using width comparison
+      // Since mobile browsers don't expose a list, we check against a known list of popular fonts.
       const fontsToCheck = [
         // Windows / Standard Web
         'Arial', 'Arial Black', 'Bahnschrift', 'Calibri', 'Cambria', 'Comic Sans MS', 'Consolas', 
@@ -554,12 +536,12 @@
     const loadGoogleFontBtn = document.getElementById('loadGoogleFontBtn');
     
     loadGoogleFontBtn.addEventListener('click', () => {
-      const name = googleFontInput.value. trim();
-      if (! name) return;
+      const name = googleFontInput.value.trim();
+      if (!name) return;
       
       // Construct Google Fonts URL
-      // e.g.  https://fonts.googleapis.com/css2?family=Lobster&display=swap
-      const linkHref = `https://fonts.googleapis.com/css2?family=${name. replace(/ /g, '+')}&display=swap`;
+      // e.g. https://fonts.googleapis.com/css2?family=Lobster&display=swap
+      const linkHref = `https://fonts.googleapis.com/css2?family=${name.replace(/ /g, '+')}&display=swap`;
       
       // Create link element
       const link = document.createElement('link');
@@ -579,38 +561,32 @@
         
         // Feedback
         googleFontInput.value = '';
-        googleFontInput.placeholder = 'Loaded:  ' + name;
+        googleFontInput.placeholder = 'Loaded: ' + name;
         
         // Force Fabric to re-render after a slight delay to ensure font is ready
         setTimeout(() => canvas.requestRenderAll(), 500);
       };
       
       link.onerror = () => {
-        alert(`Could not load Google Font "${name}".  Please check the spelling exactly as it appears on fonts.google.com.`);
+        alert(`Could not load Google Font "${name}". Please check the spelling exactly as it appears on fonts.google.com.`);
       };
       
-      document.head. appendChild(link);
+      document.head.appendChild(link);
     });
 
     // Font family & size controls apply to active text
     const fontFamily = document.getElementById('fontFamily');
-    const fontSize = document. getElementById('fontSize');
+    const fontSize = document.getElementById('fontSize');
     function applyTextStyles() {
       const obj = canvas.getActiveObject();
-      if (! obj || !(obj instanceof fabric.IText)) return;
+      if (!obj || !(obj instanceof fabric.IText)) return;
       obj.set({
-        fontFamily: fontFamily. value,
+        fontFamily: fontFamily.value,
         fontSize: parseInt(fontSize.value, 10) || obj.fontSize,
         fill: '#000000', // enforce black text color
       });
-      obj.set('fontWeight', boldOn ?  'bold' : 'normal');
-      obj.set('fontStyle', italicOn ? 'italic' :  'normal');
-      
-      // If circular text is active, regenerate the path
-      if (obj.isCircularText) {
-        updateCircularText(obj);
-      }
-      
+      obj.set('fontWeight', boldOn ? 'bold' : 'normal');
+      obj.set('fontStyle', italicOn ? 'italic' : 'normal');
       canvas.requestRenderAll();
     }
     fontFamily.addEventListener('change', applyTextStyles);
@@ -625,7 +601,7 @@
       boldBtn.style.outline = boldOn ? '2px solid var(--accent)' : 'none';
       italicBtn.style.outline = italicOn ? '2px solid var(--accent)' : 'none';
     }
-    boldBtn. addEventListener('click', () => {
+    boldBtn.addEventListener('click', () => {
       boldOn = !boldOn; updateToggleStyles(); applyTextStyles();
     });
     italicBtn.addEventListener('click', () => {
@@ -638,7 +614,7 @@
     const alignRightBtn = document.getElementById('alignRightBtn');
 
     function updateAlignmentUI(align) {
-      alignLeftBtn. style.outline = align === 'left' ? '2px solid var(--accent)' : 'none';
+      alignLeftBtn.style.outline = align === 'left' ? '2px solid var(--accent)' : 'none';
       alignCenterBtn.style.outline = align === 'center' ? '2px solid var(--accent)' : 'none';
       alignRightBtn.style.outline = align === 'right' ? '2px solid var(--accent)' : 'none';
     }
@@ -655,150 +631,11 @@
     alignCenterBtn.addEventListener('click', () => setTextAlign('center'));
     alignRightBtn.addEventListener('click', () => setTextAlign('right'));
 
-    // ==================== CIRCULAR TEXT FEATURE ====================
-    
-    const circularTextBtn = document.getElementById('circularTextBtn');
-    const toolbarCircular = document.getElementById('toolbar-circular');
-    const curveRadiusInput = document.getElementById('curveRadius');
-    const curveValue = document.getElementById('curveValue');
-    const curveDirection = document.getElementById('curveDirection');
-
-    // Toggle circular text mode
-    circularTextBtn.addEventListener('click', () => {
-      const obj = canvas.getActiveObject();
-      if (!obj || !(obj instanceof fabric.IText)) return;
-
-      if (obj.isCircularText) {
-        // Disable circular text
-        convertToStraightText(obj);
-      } else {
-        // Enable circular text
-        convertToCircularText(obj);
-      }
-      
-      updateToolbar();
-    });
-
-    // Update curve radius
-    curveRadiusInput.addEventListener('input', (e) => {
-      const obj = canvas.getActiveObject();
-      if (!obj || ! obj.isCircularText) return;
-      
-      const radius = parseInt(e.target.value, 10);
-      curveValue.textContent = radius;
-      obj.circularRadius = radius;
-      updateCircularText(obj);
-    });
-
-    // Flip curve direction
-    curveDirection. addEventListener('change', (e) => {
-      const obj = canvas. getActiveObject();
-      if (!obj || !obj.isCircularText) return;
-      
-      obj.circularFlip = e.target.checked;
-      updateCircularText(obj);
-    });
-
-    function convertToCircularText(textObj) {
-      // Store original text for reference
-      if (! textObj.originalText) {
-        textObj.originalText = textObj.text;
-      }
-      
-      // Mark as circular
-      textObj.isCircularText = true;
-      textObj.circularRadius = textObj.circularRadius || 200;
-      textObj.circularFlip = textObj.circularFlip || false;
-      
-      // Store original dimensions for restoration
-      textObj.originalLeft = textObj.left;
-      textObj.originalTop = textObj.top;
-      
-      updateCircularText(textObj);
-      
-      // Update button appearance
-      circularTextBtn.style.outline = '2px solid var(--accent)';
-    }
-
-    function convertToStraightText(textObj) {
-      textObj.isCircularText = false;
-      
-      // Remove path and restore original text
-      textObj.set('path', null);
-      if (textObj.originalText) {
-        textObj.set('text', textObj.originalText);
-      }
-      
-      canvas.requestRenderAll();
-      
-      // Update button appearance
-      circularTextBtn.style.outline = 'none';
-      toolbarCircular.style.display = 'none';
-    }
-
-    function updateCircularText(textObj) {
-      if (!textObj. isCircularText) return;
-
-      const text = textObj.text;
-      const radius = textObj.circularRadius || 200;
-      const flip = textObj.circularFlip || false;
-      
-      // Calculate the arc length needed for the text
-      const textWidth = textObj.width;
-      const circumference = 2 * Math. PI * radius;
-      const arcAngle = (textWidth / circumference) * 360;
-      
-      // Create SVG path for circular text
-      const startAngle = flip ? 180 : 0;
-      const endAngle = flip ? 180 + arcAngle : arcAngle;
-      
-      // Generate path coordinates
-      const centerX = 0;
-      const centerY = 0;
-      
-      // For upward curve (concave up)
-      const pathRadius = flip ? -radius : radius;
-      
-      // Create the path string
-      const pathString = generateCircularPath(centerX, centerY, pathRadius, startAngle, endAngle);
-      
-      // Apply the path to the text
-      textObj.set({
-        path: new fabric.Path(pathString),
-        pathAlign: 'center',
-        pathSide: flip ? 'left' : 'right',
-        pathStartOffset: 0
-      });
-      
-      canvas.requestRenderAll();
-    }
-
-    function generateCircularPath(cx, cy, r, startAngle, endAngle) {
-      // Convert angles to radians
-      const startRad = (startAngle * Math.PI) / 180;
-      const endRad = (endAngle * Math.PI) / 180;
-      
-      // Calculate start and end points
-      const x1 = cx + r * Math. cos(startRad);
-      const y1 = cy + r * Math.sin(startRad);
-      const x2 = cx + r * Math.cos(endRad);
-      const y2 = cy + r * Math.sin(endRad);
-      
-      // Determine if we need a large arc
-      const largeArc = Math.abs(endAngle - startAngle) > 180 ? 1 : 0;
-      const sweep = endAngle > startAngle ? 1 :  0;
-      
-      // Create SVG path
-      return `M ${x1} ${y1} A ${Math.abs(r)} ${Math.abs(r)} 0 ${largeArc} ${sweep} ${x2} ${y2}`;
-    }
-
-    // ==================== END CIRCULAR TEXT FEATURE ====================
-
     // Insert image
     const imageInput = document.getElementById('imageInput');
     document.getElementById('insertImageBtn').addEventListener('click', () => imageInput.click());
 
-    // Helper:  Compress/Resize image before loading to canvas
+    // Helper: Compress/Resize image before loading to canvas
     function compressAndLoadImage(file, callback) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -806,7 +643,7 @@
         imgObj.onload = () => {
           // Create offscreen canvas
           const cvs = document.createElement('canvas');
-          const ctx = cvs. getContext('2d');
+          const ctx = cvs.getContext('2d');
           
           // Max dimension 1280px is usually safe and < 500KB with JPEG compression
           const MAX_SIZE = 1280; 
@@ -827,17 +664,17 @@
           cvs.height = h;
           ctx.drawImage(imgObj, 0, 0, w, h);
           
-          // Export as JPEG 0. 7 quality to reduce size
+          // Export as JPEG 0.7 quality to reduce size
           const dataURL = cvs.toDataURL('image/jpeg', 0.7);
           callback(dataURL);
         };
-        imgObj.src = e. target.result;
+        imgObj.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
 
     imageInput.addEventListener('change', (e) => {
-      const file = e.target.files? .[0];
+      const file = e.target.files?.[0];
       if (!file) return;
       
       document.body.style.cursor = 'wait';
@@ -854,7 +691,7 @@
           const scale = Math.min(1, maxW / img.width);
           img.scale(scale);
           
-          // Initial setup:  Normal rendering
+          // Initial setup: Normal rendering
           img.set({ 
             left: center.x, 
             top: center.y, 
@@ -871,7 +708,7 @@
           const curH = img.getScaledHeight();
 
           img.set('globalCompositeOperation', 'multiply');
-           img.filters.push(new fabric.Image. filters.Grayscale());
+           img.filters.push(new fabric.Image.filters.Grayscale());
           img.applyFilters();
 
           // Restore dimensions
@@ -901,7 +738,7 @@
         if (hasInvert) {
           obj.filters = obj.filters.filter(f => !(f instanceof fabric.Image.filters.Invert));
         } else {
-          obj.filters. push(new fabric.Image.filters.Invert());
+          obj.filters.push(new fabric.Image.filters.Invert());
         }
         obj.applyFilters();
       } else if (obj.type === 'i-text' || obj.type === 'text') {
@@ -928,7 +765,7 @@
     // Also support Delete key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Delete') {
-        const obj = canvas. getActiveObject();
+        const obj = canvas.getActiveObject();
         if (obj) { canvas.remove(obj); canvas.discardActiveObject(); canvas.requestRenderAll(); }
       }
     });
@@ -955,7 +792,7 @@
       const dataURL = canvas.toDataURL({ format: 'png', quality: 1 });
       const a = document.createElement('a');
       a.href = dataURL;
-      a. download = 'project-export.png';
+      a.download = 'project-export.png';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -980,11 +817,11 @@
     // Email export
     document.getElementById('emailBtn').addEventListener('click', () => {
       const dataURL = exportPNG();
-      // Prefill email.  Note: attaching images via mailto isn't reliably supported. 
+      // Prefill email. Note: attaching images via mailto isn't reliably supported.
       // We'll include the data URL inline and suggestion text.
       const subject = encodeURIComponent('Editor Export - project-export.png');
       const body = encodeURIComponent(
-        'Hi,\n\nAttached is the export.  If no attachment appears, please use the downloaded file and attach it manually.\n\nData URL preview (copy if needed):\n' + dataURL. substring(0, 100) + '...'
+        'Hi,\\n\\nAttached is the export. If no attachment appears, please use the downloaded file and attach it manually.\\n\\nData URL preview (copy if needed):\\n' + dataURL.substring(0, 100) + '...\\n\\nThanks.'
       );
       const mailto = `mailto:blaychris@gmail.com?subject=${subject}&body=${body}`;
       window.location.href = mailto;
@@ -999,43 +836,24 @@
       const obj = canvas.getActiveObject();
       const textToolbar = document.getElementById('toolbar-text');
       const imageToolbar = document.getElementById('toolbar-image');
-      const circularToolbar = document.getElementById('toolbar-circular');
       
       // Reset visibility
-      textToolbar.style. display = 'none';
+      textToolbar.style.display = 'none';
       imageToolbar.style.display = 'none';
-      circularToolbar. style.display = 'none';
 
       if (obj) {
         if (obj instanceof fabric.IText || obj.type === 'text' || obj.type === 'i-text') {
             textToolbar.style.display = 'flex';
-            
             // Sync values
             fontFamily.value = obj.fontFamily || fontFamily.value;
-            fontSize. value = obj.fontSize || fontSize. value;
+            fontSize.value = obj.fontSize || fontSize.value;
             boldOn = (obj.fontWeight === 'bold');
             italicOn = (obj.fontStyle === 'italic');
             updateToggleStyles();
             updateAlignmentUI(obj.textAlign || 'left');
-            
-            // Update circular text button state
-            if (obj.isCircularText) {
-              circularTextBtn. style.outline = '2px solid var(--accent)';
-              circularToolbar.style.display = 'flex';
-              
-              // Update circular controls
-              curveRadiusInput.value = obj.circularRadius || 200;
-              curveValue.textContent = obj.circularRadius || 200;
-              curveDirection.checked = obj.circularFlip || false;
-            } else {
-              circularTextBtn.style.outline = 'none';
-            }
         } else if (obj instanceof fabric.Image || obj.type === 'image') {
             imageToolbar.style.display = 'flex';
         }
-      } else {
-        // No selection - reset circular button
-        circularTextBtn.style.outline = 'none';
       }
     }
 
@@ -1086,7 +904,7 @@
             canvas.zoomToPoint(point, newZoom);
           }
         }
-      }, { passive:  false });
+      }, { passive: false });
 
       canvasEl.addEventListener('touchend', () => {
         canvas.selection = true; // Re-enable selection
