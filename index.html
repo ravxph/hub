@@ -242,6 +242,53 @@
       // Force a render immediately to ensure canvas is ready
       canvas.renderAll();
 
+      // Paste Image Support
+      window.addEventListener('paste', (e) => {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        let blob = null;
+
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf('image') === 0) {
+            blob = items[i].getAsFile();
+            break;
+          }
+        }
+
+        if (blob !== null) {
+           const reader = new FileReader();
+           reader.onload = (event) => {
+             const imgObj = new Image();
+             imgObj.src = event.target.result;
+             imgObj.onload = () => {
+               const imgInstance = new fabric.Image(imgObj);
+               
+               // Intelligent scaling (50% of canvas)
+               const scale = Math.min(
+                 (canvas.width * 0.5) / imgInstance.width, 
+                 (canvas.height * 0.5) / imgInstance.height
+               );
+               // Ensure we don't scale up if image is small
+               // But usually we want it visible.
+               
+               imgInstance.scale(scale);
+
+               imgInstance.set({
+                   left: canvas.width / 2,
+                   top: canvas.height / 2,
+                   originX: 'center',
+                   originY: 'center'
+               });
+               
+               canvas.add(imgInstance);
+               canvas.setActiveObject(imgInstance);
+               canvas.renderAll();
+             }
+           };
+           reader.readAsDataURL(blob);
+           e.preventDefault(); 
+        }
+      });
+
       // Limit rotation to 15 degree steps
       canvas.on('object:rotating', (e) => {
         e.target.angle = Math.round(e.target.angle / 15) * 15;
